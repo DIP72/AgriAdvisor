@@ -211,35 +211,49 @@ function App() {
   const notificationSound = useRef(new Audio('https://assets.mixkit.co/active_storage/sfx/2354/2354-preview.mp3'));
 
   React.useEffect(() => {
-    if (isAuthenticated && user) {
+    if (isAuthenticated && user?.id) {
       const backendUrl = import.meta.env.VITE_API_URL || '';
-      const sock = io(backendUrl || '/');
+      // Use standard connection without trailing slash for better reliability
+      const sock = io(backendUrl || undefined);
+
+      // Explicitly join the room to stay in sync with activity
+      sock.emit('joinRoom', 'farmers-community');
 
       sock.on('community:newActivity', (data) => {
-        // Only show notification if it's not from the current user
-        if (data.authorId !== user.id && data.authorName !== user.name) {
-          // Play sound
-          notificationSound.current.play().catch(e => console.log('Audio play blocked by browser:', e));
+        // Robust check: ensure IDs are compared as strings
+        const currentUserId = String(user.id);
+        const incomingAuthorId = String(data.authorId);
+
+        if (incomingAuthorId !== currentUserId) {
+          // Play sound with a fallback to avoid blocking
+          try {
+            if (notificationSound.current) {
+              notificationSound.current.currentTime = 0;
+              notificationSound.current.play().catch(() => { });
+            }
+          } catch (e) { }
 
           setNotifications(prev => {
-            // Avoid duplicate notifications for the same ID
+            // Uniqueness check
             if (prev.find(n => n._id === data._id)) return prev;
 
             const newNotif = { ...data, timestamp: Date.now() };
 
-            // Auto-remove after 6 seconds
             setTimeout(() => {
               setNotifications(current => current.filter(n => (n._id || n.timestamp) !== (newNotif._id || newNotif.timestamp)));
             }, 6000);
 
-            return [newNotif, ...prev].slice(0, 3); // Max 3 notifications at a time
+            return [newNotif, ...prev].slice(0, 3);
           });
         }
       });
 
-      return () => sock.disconnect();
+      return () => {
+        sock.off('community:newActivity');
+        sock.disconnect();
+      };
     }
-  }, [isAuthenticated, user]);
+  }, [isAuthenticated, user?.id]);
 
   React.useEffect(() => {
     if (!authLoading) {

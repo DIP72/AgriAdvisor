@@ -118,7 +118,7 @@ app.post('/api/community/post', async (req, res) => {
         // Global notification event
         io.emit('community:newActivity', {
             type: 'post',
-            authorId: newPost.authorId,
+            authorId: String(newPost.authorId),
             authorName: newPost.authorName,
             content: newPost.content,
             timestamp: newPost.createdAt,
@@ -174,7 +174,7 @@ io.on('connection', (socket) => {
             // Global notification event (broadcast to everyone connected)
             io.emit('community:newActivity', {
                 type: 'message',
-                authorId: newPost.authorId,
+                authorId: String(newPost.authorId),
                 authorName: newPost.authorName,
                 content: newPost.content,
                 timestamp: newPost.createdAt,
