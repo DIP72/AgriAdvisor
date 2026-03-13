@@ -1,53 +1,67 @@
-# 🌾 AgriAdvisor
+# CropAdvisor: Maharashtra Edition 🌾
 
-### Deterministic Crop Intelligence & Farmer Support Ecosystem
-*"Moving from guesswork to data-driven decisions — built for the Indian farmer."*
+**A Smart, Data-Driven Crop Recommendation Engine for Farmers.**
 
----
-
-## 🔍 The Problem Statement
-Agriculture in Maharashtra faces a **"Knowledge-Action Gap."** Farmers often have the hard work ethic but lack localized data on which crops will actually thrive based on current weather, soil chemistry, and irrigation limits.
-
-**AgriAdvisor** bridges this gap using a transparent comparison engine that mirrors the logic used by the IMD and KVK advisory systems, now featuring persistent community support.
+CropAdvisor is a specialized advisory tool designed to help farmers in Maharashtra make informed planting decisions. By moving away from "black-box" models, we provide a transparent, rule-based recommendation system that aligns with official government advisory logic (IMD/KVK).
 
 ---
 
-## 💡 The "Transparent" Innovation
-Unlike complex ML models, AgriAdvisor uses a **Rule-Based Expert System**. This ensures that every recommendation is traceable, explainable, and grounded in the official agricultural benchmarks of Maharashtra.
+## 🌍 The Mission
+To empower the agricultural backbone of Maharashtra by turning complex climate and soil data into simple, actionable insights. We bridge the gap between high-level meteorological data and the everyday farmer.
 
-### 1. Hard/Soft Flag Logic
-* **Hard Filters:** Instantly eliminates crops that cannot survive the current season or soil type.
-* **Soft Flags:** A color-coded scoring system (Green/Yellow/Red) based on:
-    * **Weather Integration:** Live data from OpenWeatherMap API.
-    * **Risk Assessment:** Humidity + Temperature thresholds to predict fungal/bacterial risks.
+## ✨ Core Features
 
-### 2. Persistent Support via MongoDB
-We have integrated **MongoDB** to handle persistent data storage. This allows the platform to:
-* **Track Community Chats:** Store and retrieve discussions between farmers and experts.
-* **History Logging:** Maintain a record of previous recommendations so farmers can track their decision-making over time.
+### 🧠 The "Logic" Engine
+Unlike standard ML models, our system uses a **Transparent Rule Engine** to ensure 100% explainability:
+* **Hard Filters:** Eliminates crops that mismatch non-negotiable factors like Season and Soil Type.
+* **Soft Scoring:** A "Flag System" (Green/Yellow/Red) evaluates irrigation, temperature, and humidity.
+* **Risk Assessment:** Live tracking of fungal or bacterial risks based on real-time humidity and waterlogging potential.
+* **Justified Ranking:** Crops are sorted by "Green Flags" with a clear *"Why this crop?"* breakdown.
+
+### 📱 Smart Functionality
+* **Onboarding:** GPS-based location tracking and automated weather data fetching.
+* **Live Dashboard:** Real-time weather cards, seasonal badges, and risk alerts.
+* **Accessibility:** Integrated **Voice-over support (Marathi/English)** and offline-first capabilities for rural connectivity.
 
 ---
 
-## ⚙️ Technical Implementation
+## 🛠️ Tech Stack
 
-### The Tech Stack
-* **Frontend:** React.js (Component-based architecture)
-* **Styling:** Custom CSS (Modular and responsive design)
-* **Animations:** Framer Motion (For smooth UI transitions)
-* **Database:** MongoDB (Chat history and user data persistence)
-* **Backend:** Node.js / Express.js (API handling and database orchestration)
-* **Real-time:** Socket.io (Live community chat updates)
-* **Data Layer:** Static JSON Dataset (`maharashtra_full_crop_dataset_15.json`)
-* **External APIs:** OpenWeatherMap API for live atmospheric data.
+* **Frontend:** React.js (v18+), Tailwind CSS, Framer Motion
+* **State Management:** React Router, Context API (Language & Farm State)
+* **Data:** JSON-based Master Dataset (`maharashtra_full_crop_dataset_15.json`)
+* **APIs:** OpenWeatherMap (Current & 5-day Forecast), IMD MAUSAM (Integration)
+* **Next Phase:** Full MERN Stack (Node.js, Express, MongoDB, Socket.io)
 
+---
 
+## 👥 Team & Contributions
 
-### Project Structure
-```plaintext
-src/
-├── components/       # Reusable UI elements (Weather Cards, Forms)
-├── pages/            # Dashboard, Recommendations, Community Chat
-├── data/             # maharashtra_full_crop_dataset_15.json
-├── assets/           # Crop images and icons
-├── App.js            # Routing and core logic
-└── index.css         # Global styling
+| Name | Role | Core Responsibilities |
+| :--- | :--- | :--- |
+| **Siddhi Bhosale** | **Lead & Backend** | Developed the core logic engine, rule-matching algorithms, and MongoDB architecture. |
+| **Vedika Shewale** | **Frontend & Socket.io** | Built core UI components and implemented real-time communication synchronization. |
+| **Anish Shewale** | **PWA & Deployment** | Managed mobile optimization (PWA) and handled all deployment workflows. |
+| **Shravani Shinde** | **Frontend & Research** | Agricultural data sourcing and curation of the localized crop dataset. |
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+* Node.js (v16+)
+* OpenWeatherMap API Key
+
+### Installation
+```bash
+# Clone the repository
+git clone [https://github.com/your-username/crop-advisor.git](https://github.com/your-username/crop-advisor.git)
+
+# Install dependencies
+npm install
+
+# Set up environment variables
+echo "REACT_APP_WEATHER_API_KEY=your_key_here" > .env
+
+# Launch the dashboard
+npm start
