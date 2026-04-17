@@ -442,7 +442,7 @@ function App() {
                   )}
                   {screen === 'settings' && (
                     <SettingsScreen
-                      darkMode={isDarkMode}
+                      isDarkMode={isDarkMode}
                       setIsDarkMode={setIsDarkMode}
                       toggleTheme={toggleTheme}
                       isEnglish={isEnglish}

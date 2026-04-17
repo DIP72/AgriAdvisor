@@ -278,7 +278,7 @@ const HomeScreen = ({ setScreen, setTab, isDarkMode, isEnglish, setSelectedCrop 
                             <div className="marathi font-bold text-gray-900 dark:text-white">
                                 {diseaseRisk ? diseaseRisk.title : (isEn ? 'Weather Analysis Loading...' : 'हवामान विश्लेषण लोड होत आहे...')}
                             </div>
-                            <div className="english-sub text-gray-500 dark:text-gray-400 text-sm">
+                            <div className="english-sub  text-sm">
                                 {diseaseRisk ? diseaseRisk.desc : (isEn ? 'Please wait while we analyze risks.' : 'कृपया विश्लेषण होईपर्यंत प्रतीक्षा करा.')}
                             </div>
                         </div>
@@ -286,8 +286,8 @@ const HomeScreen = ({ setScreen, setTab, isDarkMode, isEnglish, setSelectedCrop 
 
                     <div className="insight-grid grid grid-cols-2 gap-4" style={{ margin: '0 0 20px' }}>
                         <div className="insight-card bg-white dark:bg-gray-800 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700" onClick={() => { setSelectedCrop(topCrop); setScreen('crop-detail'); }} style={{ cursor: 'pointer' }}>
-                            <div className="marathi text-gray-900 dark:text-white font-bold" style={{ fontSize: '1rem' }}>
-                                {isEn ? topCrop.englishName : topCrop.marathiName}
+                                <div className="insight-card-text font-bold" style={{ fontSize: '1rem' }}>
+                                    {isEn ? topCrop.englishName : topCrop.marathiName}
                             </div>
                             <div style={{ fontSize: '0.75rem', color: '#9ca3af', marginBottom: '8px' }}>
                                 {isEn ? topCrop.marathiName : topCrop.englishName}
@@ -296,21 +296,21 @@ const HomeScreen = ({ setScreen, setTab, isDarkMode, isEnglish, setSelectedCrop 
                                 <div style={{ fontWeight: 800, color: 'var(--primary)' }}>
                                     {isEn ? `Price: ${topCrop.price}` : `दर: ${topCrop.price}`}
                                 </div>
-                                <div style={{ opacity: 0.8 }}>
+                                <div style={{ opacity: 0.9 }}>
                                     {isEn ? `Match: ${topCrop.matchScore}%` : `जुळणी: ${topCrop.matchScore}%`}
                                 </div>
                             </div>
                         </div>
                         <div className="insight-card bg-white dark:bg-gray-800 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700">
-                            <div className="marathi text-gray-900 dark:text-white font-bold" style={{ fontSize: '1rem' }}>
+                            <div className="insight-card-text" style={{ fontSize: '1rem' }}>
                                 {isEn ? 'Risk Level' : 'जोखीम पातळी'}
                             </div>
                             <div style={{ fontSize: '0.75rem', color: '#9ca3af', marginBottom: '8px' }}>
                                 {isEn ? 'जोखीम पातळी' : 'Risk Level'}
                             </div>
                             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', fontWeight: 700, marginBottom: '4px' }}>
-                                <span className="text-gray-500 dark:text-gray-400">{risk.level}</span>
-                                <span className="text-gray-500 dark:text-gray-400">{risk.value}%</span>
+                                <span className="insight-card-text">{risk.level}</span>
+                                <span className="insight-card-text">{risk.value}%</span>
                             </div>
                             <div className="progress-bar-container bg-gray-100 dark:bg-gray-700 rounded-full h-2 overflow-hidden">
                                 <div className="progress-bar h-full" style={{ width: `${risk.value}%`, background: risk.color }}></div>

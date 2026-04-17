@@ -14,7 +14,7 @@ const MainHeader = ({ screen, setScreen, setTab, isEnglish, setIsEnglish, setIsM
         right: 0,
         transition: 'all 0.3s ease',
         zIndex: 1100,
-        padding: isDesktop ? '16px 40px' : '16px 20px',
+        padding: isDesktop ? '10px 40px' : '16px 20px',
         backdropFilter: 'blur(10px)',
         borderBottom: isDarkMode ? '1px solid #1e293b' : '1px solid rgba(0,0,0,0.05)'
     }}>
@@ -57,7 +57,7 @@ const MainHeader = ({ screen, setScreen, setTab, isEnglish, setIsEnglish, setIsM
             </div>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-end gap-4">
             <LanguageToggle isEnglish={isEnglish} setIsEnglish={setIsEnglish} isDarkMode={isDarkMode} />
 
             <TTSButton

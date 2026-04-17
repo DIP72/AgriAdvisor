@@ -82,6 +82,7 @@ const TTSButton = ({ textToRead, isDarkMode, className = "" }) => {
             style={{
                 background: isPlaying ? '#16a34a' : (isDarkMode ? 'rgba(255,255,255,0.1)' : 'white'),
                 padding: '10px',
+                margin:'10px',
                 borderRadius: '50%',
                 display: 'flex',
                 alignItems: 'center',
