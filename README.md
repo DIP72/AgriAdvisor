@@ -33,18 +33,6 @@ Unlike standard ML models, our system uses a **Transparent Rule Engine** to ensu
 * **APIs:** OpenWeatherMap (Current & 5-day Forecast), IMD MAUSAM (Integration)
 * **Next Phase:** Full MERN Stack (Node.js, Express, MongoDB, Socket.io)
 
----
-
-## 👥 Team & Contributions
-
-| Name | Role | Core Responsibilities |
-| :--- | :--- | :--- |
-| **Siddhi Bhosale** | **Lead & Backend** | Developed the core logic engine, rule-matching algorithms, and MongoDB architecture. |
-| **Vedika Shewale** | **Frontend & Socket.io** | Built core UI components and implemented real-time communication synchronization. |
-| **Anish Shewale** | **PWA & Deployment** | Managed mobile optimization (PWA) and handled all deployment workflows. |
-| **Shravani Shinde** | **Frontend & Research** | Agricultural data sourcing and curation of the localized crop dataset. |
-
----
 
 ## 🚀 Getting Started
 
