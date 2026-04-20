@@ -32,6 +32,7 @@ const SettingsScreen = ({ darkMode, isDarkMode, setIsDarkMode, toggleTheme, isEn
         }
     ];
 
+
     return (
         <Motion.div
             initial={{ opacity: 0, scale: 0.95 }}
