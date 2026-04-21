@@ -11,6 +11,8 @@
   },
   "dependencies": {
     "@react-oauth/google": "^0.13.4",
+    "@tensorflow-models/mobilenet": "^2.1.1",
+    "@tensorflow/tfjs": "^4.22.0",
     "framer-motion": "^12.34.0",
     "jwt-decode": "^4.0.0",
     "lucide-react": "^0.563.0",

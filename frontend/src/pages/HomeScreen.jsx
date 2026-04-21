@@ -355,6 +355,22 @@ const HomeScreen = ({ setScreen, setTab, isDarkMode, isEnglish, setSelectedCrop 
                         </div>
                     </div>
 
+                    <button
+                        onClick={() => setScreen('scanner')}
+                        className="bg-green-500 hover:bg-green-600 text-white font-bold py-4 px-6 rounded-2xl shadow-md flex items-center gap-3 transition-all w-full"
+                        style={{ margin: '0 0 24px' }}
+                    >
+                        <span className="text-2xl">🔍</span>
+                        <div className="text-left">
+                            <p className="font-bold">
+                                {isEnglish ? 'Crop Disease Scanner' : 'पीक रोग स्कॅनर'}
+                            </p>
+                            <p className="text-sm opacity-80">
+                                {isEnglish ? 'Detect disease from a leaf photo' : 'पानाचा फोटो घेऊन रोग तपासा'}
+                            </p>
+                        </div>
+                    </button>
+
                     <button className="cta-btn" onClick={() => { setScreen('recommendations'); setTab('crops'); }}>
                         <div className="marathi" style={{ fontSize: '1.2rem' }}>
                             {isEn ? 'Get Crop Recommendations' : 'पीक शिफारसी मिळवा'}

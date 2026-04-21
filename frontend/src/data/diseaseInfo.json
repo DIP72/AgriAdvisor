@@ -1,0 +1,82 @@
+{
+  "Tomato Early Blight": {
+    "marathi": "टोमॅटो अर्ली ब्लाइट",
+    "severity": "Medium",
+    "description": "Brown spots with yellow rings appear on lower leaves first.",
+    "description_marathi": "खालच्या पानांवर पिवळ्या कडा असलेले तपकिरी डाग दिसतात.",
+    "organic_treatment": "Spray neem oil solution every 7 days. Remove affected leaves immediately.",
+    "chemical_treatment": "Apply Mancozeb 75% WP at 2.5g per litre of water.",
+    "organic_marathi": "दर 7 दिवसांनी कडुनिंबाचे तेल फवारा. बाधित पाने लगेच काढा.",
+    "chemical_marathi": "मॅन्कोझेब 75% WP 2.5 ग्रॅम प्रति लिटर पाण्यात मिसळून फवारा."
+  },
+  "Tomato Late Blight": {
+    "marathi": "टोमॅटो लेट ब्लाइट",
+    "severity": "High",
+    "description": "Dark water-soaked lesions on leaves and stems. White mold visible underneath.",
+    "description_marathi": "पाने आणि देठांवर गडद ओले डाग. खाली पांढरी बुरशी दिसते.",
+    "organic_treatment": "Remove and destroy all infected plants. Avoid overhead watering.",
+    "chemical_treatment": "Apply Cymoxanil + Mancozeb at 3g per litre of water.",
+    "organic_marathi": "सर्व बाधित झाडे काढून नष्ट करा. वरून पाणी देणे टाळा.",
+    "chemical_marathi": "सायमॉक्सनिल + मॅन्कोझेब 3 ग्रॅम प्रति लिटर पाण्यात फवारा."
+  },
+  "Tomato Leaf Curl": {
+    "marathi": "टोमॅटो लीफ कर्ल",
+    "severity": "High",
+    "description": "Leaves curl upward and turn yellow. Caused by whitefly-transmitted virus.",
+    "description_marathi": "पाने वरच्या बाजूने गुंडाळतात आणि पिवळी पडतात. पांढऱ्या माशीमुळे होते.",
+    "organic_treatment": "Use yellow sticky traps to catch whiteflies. Spray garlic extract.",
+    "chemical_treatment": "Spray Imidacloprid 17.8 SL at 0.3ml per litre to control whitefly.",
+    "organic_marathi": "पांढऱ्या माशी पकडण्यासाठी पिवळे चिकट सापळे वापरा. लसूण अर्क फवारा.",
+    "chemical_marathi": "इमिडाक्लोप्रिड 17.8 SL 0.3 मिली प्रति लिटर फवारा."
+  },
+  "Cotton Leaf Reddening": {
+    "marathi": "कापूस पान लाल होणे",
+    "severity": "Medium",
+    "description": "Leaves turn red or purple due to nutrient deficiency or pest stress.",
+    "description_marathi": "पोषण कमतरता किंवा कीड तणावामुळे पाने लाल किंवा जांभळी होतात.",
+    "organic_treatment": "Apply compost and ensure adequate potassium in soil.",
+    "chemical_treatment": "Spray 1% Potassium Nitrate solution on leaves.",
+    "organic_marathi": "कंपोस्ट घाला आणि मातीत पुरेसे पोटॅशियम असल्याची खात्री करा.",
+    "chemical_marathi": "पानांवर 1% पोटॅशियम नायट्रेट द्रावण फवारा."
+  },
+  "Soybean Yellow Mosaic": {
+    "marathi": "सोयाबीन पिवळा मोझॅक",
+    "severity": "High",
+    "description": "Yellow and green mosaic pattern on leaves. Spread by aphids and whiteflies.",
+    "description_marathi": "पानांवर पिवळा आणि हिरवा मोझॅक नमुना. माव्यामुळे आणि पांढऱ्या माशीमुळे पसरतो.",
+    "organic_treatment": "Remove infected plants immediately. Use reflective mulch to repel insects.",
+    "chemical_treatment": "Spray Thiamethoxam 25 WG at 0.5g per litre to control vectors.",
+    "organic_marathi": "बाधित झाडे लगेच काढा. कीटक दूर ठेवण्यासाठी परावर्तक आच्छादन वापरा.",
+    "chemical_marathi": "थायमेथॉक्सॅम 25 WG 0.5 ग्रॅम प्रति लिटर फवारा."
+  },
+  "Wheat Brown Rust": {
+    "marathi": "गहू तपकिरी गंज",
+    "severity": "High",
+    "description": "Orange-brown pustules on upper leaf surface. Reduces grain quality.",
+    "description_marathi": "पानांच्या वरच्या बाजूवर नारिंगी-तपकिरी फोड. धान्याची गुणवत्ता कमी होते.",
+    "organic_treatment": "Use resistant wheat varieties. Maintain field hygiene.",
+    "chemical_treatment": "Apply Propiconazole 25 EC at 1ml per litre at first sign of disease.",
+    "organic_marathi": "प्रतिरोधक गहू वाण वापरा. शेत स्वच्छ ठेवा.",
+    "chemical_marathi": "रोगाच्या पहिल्या लक्षणांवर प्रोपिकोनाझोल 25 EC 1 मिली प्रति लिटर फवारा."
+  },
+  "Onion Purple Blotch": {
+    "marathi": "कांदा जांभळा डाग",
+    "severity": "Medium",
+    "description": "Purple water-soaked lesions on leaves. Worsens in humid conditions.",
+    "description_marathi": "पानांवर जांभळे ओले डाग. दमट हवामानात जास्त होते.",
+    "organic_treatment": "Improve air circulation between plants. Avoid excess irrigation.",
+    "chemical_treatment": "Spray Iprodione 50 WP at 2g per litre every 10 days.",
+    "organic_marathi": "झाडांमध्ये हवा खेळती ठेवा. जास्त पाणी देणे टाळा.",
+    "chemical_marathi": "दर 10 दिवसांनी इप्रोडिओन 50 WP 2 ग्रॅम प्रति लिटर फवारा."
+  },
+  "Healthy": {
+    "marathi": "निरोगी",
+    "severity": "None",
+    "description": "Your crop looks healthy! No disease detected.",
+    "description_marathi": "तुमचे पीक निरोगी दिसत आहे! कोणताही रोग आढळला नाही.",
+    "organic_treatment": "Continue regular care and monitoring.",
+    "chemical_treatment": "No treatment needed.",
+    "organic_marathi": "नियमित काळजी आणि निरीक्षण सुरू ठेवा.",
+    "chemical_marathi": "उपचाराची गरज नाही."
+  }
+}

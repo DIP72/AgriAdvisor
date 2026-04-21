@@ -24,6 +24,7 @@ import SideMenu from './components/SideMenu';
 import CropRecommendationScreen from './pages/CropRecommendationScreen';
 import CropDetailScreen from './pages/CropDetailScreen';
 import DesktopSidebar from './components/DesktopSidebar';
+import CropScanner from './components/CropScanner';
 import MainHeader from './components/MainHeader';
 import NotificationTray from './components/NotificationTray';
 import io from 'socket.io-client';
@@ -433,6 +434,7 @@ function App() {
                     />
                   )}
                   {screen === 'community' && <CommunityScreen isDarkMode={isDarkMode} />}
+                  {screen === 'scanner' && <CropScanner />}
                   {screen === 'profile' && (
                     <ProfileScreen
                       darkMode={isDarkMode}
