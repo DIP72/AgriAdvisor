@@ -1,10 +1,152 @@
 import React, { useState, useRef } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { 
+  Camera, 
+  Image as ImageIcon, 
+  Sparkles, 
+  Lightbulb, 
+  Zap, 
+  Info, 
+  RotateCcw, 
+  Search, 
+  Loader2, 
+  Leaf, 
+  CheckCircle2, 
+  AlertCircle,
+  ArrowLeft
+} from 'lucide-react';
 import DiseaseResultCard from './DiseaseResultCard';
 import { useLanguage } from '../context/LanguageContext';
 import { analyzeCropDisease } from '../services/geminiVision';
 
-const CropScanner = () => {
-  const { language, setLanguage, isMarathi } = useLanguage();
+// --- Sub-Components ---
+
+/**
+ * 🌿 1. Header Section (Hero Card)
+ * Compact, centered card with title and icon
+ */
+const HeaderCard = ({ isMarathi, setScreen }) => (
+  <motion.div 
+    initial={{ opacity: 0, y: -20 }}
+    animate={{ opacity: 1, y: 0 }}
+    className="bg-white dark:bg-gray-800 rounded-3xl p-6 shadow-md border border-green-100 dark:border-gray-700 flex items-center justify-between"
+  >
+    <div className="flex items-center gap-4">
+      <button 
+        onClick={() => setScreen('home')}
+        className="p-2 hover:bg-green-50 dark:hover:bg-gray-700 rounded-full transition-colors text-green-600"
+      >
+        <ArrowLeft size={24} />
+      </button>
+      <div className="flex items-center gap-3">
+        <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-xl">
+          <Leaf className="text-green-600" size={24} />
+        </div>
+        <div>
+          <h1 className="text-xl font-bold text-gray-900 dark:text-white leading-none">
+            {isMarathi ? 'पीक रोग स्कॅनर' : 'Crop Disease Scanner'}
+          </h1>
+          <p className="text-gray-500 dark:text-gray-400 text-xs mt-1 font-medium">
+            {isMarathi ? 'झटपट रोग ओळखा' : 'Scan your crop leaf to detect disease instantly'}
+          </p>
+        </div>
+      </div>
+    </div>
+    <Sparkles className="text-green-500 hidden sm:block" size={24} />
+  </motion.div>
+);
+
+/**
+ * 📸 2. Upload Section
+ * Centered upload card with dashed border and custom buttons
+ */
+const UploadCard = ({ imageURL, onReset, onFileSelect, fileInputRef, isMarathi }) => (
+  <div className="bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-md border border-green-50 dark:border-gray-700 flex flex-col items-center text-center">
+    {!imageURL ? (
+      <div 
+        onClick={() => fileInputRef.current?.click()}
+        className="w-full border-4 border-dashed border-green-100 dark:border-gray-700 rounded-2xl p-10 flex flex-col items-center cursor-pointer hover:bg-green-50/50 dark:hover:bg-gray-700/50 transition-all group"
+      >
+        <div className="w-16 h-16 bg-green-100 dark:bg-green-900/20 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+          <Camera size={32} className="text-green-600" />
+        </div>
+        <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-1">
+          {isMarathi ? 'फोटो निवडा' : 'Select a Photo'}
+        </h3>
+        <p className="text-sm text-gray-400 dark:text-gray-500 mb-6">
+          {isMarathi ? 'कॅमेरा किंवा गॅलरीतून निवडा' : 'Open camera or upload from gallery'}
+        </p>
+        
+        <div className="flex gap-4 w-full max-w-xs">
+          <button className="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-xl flex items-center justify-center gap-2 transition-all text-sm">
+            <Camera size={18} />
+            {isMarathi ? 'कॅमेरा' : 'Camera'}
+          </button>
+          <button className="flex-1 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 font-bold py-3 px-4 rounded-xl flex items-center justify-center gap-2 transition-all text-sm">
+            <ImageIcon size={18} />
+            {isMarathi ? 'गॅलरी' : 'Gallery'}
+          </button>
+        </div>
+      </div>
+    ) : (
+      <div className="w-full relative rounded-2xl overflow-hidden shadow-sm">
+        <img src={imageURL} alt="Preview" className="w-full h-64 object-cover" />
+        <div className="absolute inset-0 bg-black/20" />
+        <button
+          onClick={onReset}
+          className="absolute top-4 right-4 bg-white/90 dark:bg-gray-800/90 p-2 rounded-xl text-red-500 shadow-lg hover:scale-110 transition-transform"
+        >
+          <RotateCcw size={20} />
+        </button>
+        <div className="absolute bottom-4 left-4 flex items-center gap-2 bg-green-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow-lg">
+          <CheckCircle2 size={14} />
+          {isMarathi ? 'फोटो तयार आहे' : 'Photo Ready'}
+        </div>
+      </div>
+    )}
+    <input
+      ref={fileInputRef}
+      type="file"
+      accept="image/*"
+      capture="environment"
+      className="hidden"
+      onChange={onFileSelect}
+    />
+  </div>
+);
+
+/**
+ * 💡 3. Tips Grid
+ * 2 columns on desktop, 1 on mobile
+ */
+const TipsGrid = ({ isMarathi }) => {
+  const tips = [
+    { icon: Search, label: isMarathi ? 'स्पष्ट जवळचा फोटो घ्या' : 'Clear close-up photo' },
+    { icon: Zap, label: isMarathi ? 'चांगला प्रकाश' : 'Good lighting' },
+    { icon: Leaf, label: isMarathi ? 'एकाच पानावर लक्ष द्या' : 'Single leaf focus' },
+    { icon: AlertCircle, label: isMarathi ? 'स्कॅन करण्यापूर्वी पान स्वच्छ करा' : 'Clean leaf before scan' },
+  ];
+
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      {tips.map((tip, idx) => (
+        <div key={idx} className="bg-green-50/50 dark:bg-green-900/10 border border-green-100 dark:border-green-900/30 p-4 rounded-2xl flex items-center gap-4 shadow-sm">
+          <div className="bg-white dark:bg-gray-800 p-2 rounded-xl text-green-600 shadow-sm shrink-0">
+            <tip.icon size={20} />
+          </div>
+          <p className="text-xs font-bold text-gray-700 dark:text-gray-300 leading-snug">
+            {tip.label}
+          </p>
+        </div>
+      ))}
+    </div>
+  );
+};
+
+// --- Main Page Component ---
+
+const CropScanner = ({ setScreen }) => {
+  const { language, isMarathi } = useLanguage();
 
   const [image, setImage] = useState(null);
   const [imageURL, setImageURL] = useState(null);
@@ -12,41 +154,40 @@ const CropScanner = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const imageRef = useRef(null);
   const fileInputRef = useRef(null);
 
-  // Handle image selection from camera or gallery
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (!file) return;
-
     setResult(null);
     setError(null);
-
     const url = URL.createObjectURL(file);
     setImageURL(url);
     setImage(file);
   };
 
-  // Run disease detection via Gemini Vision API
   const handleScan = async () => {
     if (!image) return;
-
     try {
       setLoading(true);
       setError(null);
       const disease = await analyzeCropDisease(image);
       setResult(disease);
     } catch (err) {
-      setError(isMarathi
-        ? 'स्कॅन करताना त्रुटी आली. पुन्हा प्रयत्न करा.'
-        : 'Error during scan. Please try again.');
+      setError(isMarathi ? `स्कॅन करताना त्रुटी आली: ${err.message}` : `Scan failed: ${err.message}`);
     } finally {
       setLoading(false);
     }
   };
 
-  // TTS Read Aloud
+  const handleReset = () => {
+    setImage(null);
+    setImageURL(null);
+    setResult(null);
+    setError(null);
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
   const handleReadAloud = () => {
     if (!result) return;
     const text = isMarathi
@@ -60,317 +201,93 @@ const CropScanner = () => {
     window.speechSynthesis.speak(utterance);
   };
 
-  // Save result to console (Phase 2 will save to MongoDB)
   const handleSave = () => {
-    const savedResult = {
-      disease: result.name,
-      confidence: result.confidence,
-      severity: result.severity,
-      date: new Date().toLocaleDateString('en-IN'),
-      timestamp: Date.now()
-    };
-    console.log('Scan saved:', savedResult);
-    alert(isMarathi
-      ? '✅ निकाल जतन केला!'
-      : '✅ Result saved successfully!');
-  };
-
-  // Reset scanner
-  const handleReset = () => {
-    setImage(null);
-    setImageURL(null);
-    setResult(null);
-    setError(null);
-    if (fileInputRef.current) fileInputRef.current.value = '';
+    alert(isMarathi ? '✅ निकाल जतन केला!' : '✅ Result saved successfully!');
   };
 
   return (
-    <div className="min-h-screen bg-green-50 pb-10">
-      
-      {/* STEP 1 — REDESIGN THE HEADER SECTION */}
-      <div className="bg-gradient-to-br from-green-600 to-green-800
-                      rounded-b-3xl px-5 pt-6 pb-8 mb-6 shadow-lg">
+    <div className="w-full min-h-screen bg-gray-50 dark:bg-gray-900/50 pb-20">
+      <div className="max-w-4xl mx-auto px-4 py-8 space-y-6">
+        
+        {/* 1. Header Card */}
+        <HeaderCard isMarathi={isMarathi} setScreen={setScreen} />
 
-        {/* Top bar with back button and language toggle */}
-        <div className="flex items-center justify-between mb-6">
-          <button
-            onClick={() => window.history.back()}
-            className="w-9 h-9 bg-white bg-opacity-20 rounded-full
-                       flex items-center justify-center text-white"
-          >
-            ←
-          </button>
-          <div className="flex bg-white bg-opacity-20 rounded-full p-1">
-            <button
-              onClick={() => setLanguage('english')}
-              className={`px-3 py-1 rounded-full text-sm font-medium transition-all
-                ${language === 'english'
-                  ? 'bg-white text-green-700'
-                  : 'text-white'}`}
-            >
-              English
-            </button>
-            <button
-              onClick={() => setLanguage('marathi')}
-              className={`px-3 py-1 rounded-full text-sm font-medium transition-all
-                ${language === 'marathi'
-                  ? 'bg-white text-green-700'
-                  : 'text-white'}`}
-            >
-              मराठी
-            </button>
-          </div>
-        </div>
-
-        {/* Icon and title */}
-        <div className="text-center text-white">
-          <div className="text-6xl mb-3">🌿</div>
-          <h1 className="text-2xl font-bold mb-1">
-            {isMarathi ? 'पीक रोग स्कॅनर' : 'Crop Disease Scanner'}
-          </h1>
-          <p className="text-green-100 text-sm">
-            {isMarathi
-              ? 'पानाचा फोटो घेऊन रोग तपासा'
-              : 'Scan your crop leaf to detect disease instantly'}
-          </p>
-        </div>
-      </div>
-
-      {/* STEP 2 — REDESIGN THE UPLOAD AREA */}
-      {!imageURL ? (
-        <div className="px-4 mb-5">
-          <div
-            onClick={() => fileInputRef.current?.click()}
-            className="border-2 border-dashed border-green-300 rounded-3xl
-                       bg-white p-8 text-center cursor-pointer
-                       hover:border-green-500 hover:bg-green-50
-                       active:scale-98 transition-all duration-200 shadow-sm"
-          >
-            <div className="w-20 h-20 bg-green-100 rounded-full flex items-center
-                            justify-center mx-auto mb-4">
-              <span className="text-4xl">📸</span>
-            </div>
-            <h3 className="font-semibold text-green-800 text-lg mb-1">
-              {isMarathi ? 'फोटो निवडा' : 'Select a Photo'}
-            </h3>
-            <p className="text-green-600 text-sm mb-4">
-              {isMarathi
-                ? 'कॅमेरा उघडा किंवा गॅलरीतून फोटो निवडा'
-                : 'Open camera or upload from your gallery'}
-            </p>
-
-            {/* Two styled buttons side by side */}
-            <div className="flex gap-3 justify-center">
-              <div className="flex items-center gap-2 bg-green-600 text-white
-                              px-4 py-2.5 rounded-2xl text-sm font-medium shadow-md">
-                <span>📷</span>
-                <span>{isMarathi ? 'कॅमेरा' : 'Camera'}</span>
-              </div>
-              <div className="flex items-center gap-2 bg-white border-2
-                              border-green-400 text-green-700
-                              px-4 py-2.5 rounded-2xl text-sm font-medium">
-                <span>🖼️</span>
-                <span>{isMarathi ? 'गॅलरी' : 'Gallery'}</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Hidden actual file input */}
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/*"
-            capture="environment"
-            className="hidden"
-            onChange={handleImageChange}
-          />
-        </div>
-      ) : (
-        <div className="px-4 mb-5">
-          <div className="relative rounded-3xl overflow-hidden shadow-lg">
-            <img
-              ref={imageRef}
-              src={imageURL}
-              alt="Crop leaf"
-              className="w-full h-72 object-cover"
-              crossOrigin="anonymous"
-            />
-            {/* Dark gradient overlay at bottom */}
-            <div className="absolute bottom-0 left-0 right-0 h-16
-                            bg-gradient-to-t from-black/60 to-transparent" />
-
-            {/* Remove button top right */}
-            <button
-              onClick={handleReset}
-              className="absolute top-3 right-3 w-9 h-9 bg-black bg-opacity-50
-                         rounded-full flex items-center justify-center
-                         text-white text-lg hover:bg-opacity-70 transition-all"
-            >
-              ✕
-            </button>
-
-            {/* Change photo button bottom left */}
-            <button
-              onClick={() => fileInputRef.current?.click()}
-              className="absolute bottom-3 left-3 bg-white bg-opacity-90
-                         text-green-700 text-xs font-medium px-3 py-1.5
-                         rounded-full flex items-center gap-1 shadow-sm"
-            >
-              📷 {isMarathi ? 'बदला' : 'Change'}
-            </button>
-          </div>
-          {/* Hidden input even in preview mode to allow "Change" button to work */}
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/*"
-            capture="environment"
-            className="hidden"
-            onChange={handleImageChange}
-          />
-        </div>
-      )}
-
-      {/* STEP 3 — REDESIGN THE SCAN BUTTON */}
-      {imageURL && !result && (
-        <div className="px-4 mb-5">
-          <button
-            onClick={handleScan}
-            disabled={loading}
-            className="w-full bg-gradient-to-r from-green-600 to-green-500
-                       hover:from-green-700 hover:to-green-600
-                       disabled:from-green-300 disabled:to-green-200
-                       text-white font-bold py-5 rounded-3xl text-lg
-                       shadow-lg shadow-green-200 transition-all
-                       active:scale-95 flex items-center justify-center gap-3"
-          >
-            {loading ? (
-              <>
-                <div className="w-6 h-6 border-4 border-white border-t-transparent
-                                rounded-full animate-spin" />
-                <span>
-                  {isMarathi ? 'AI विश्लेषण होत आहे...' : 'AI Analysing...'}
-                </span>
-              </>
-            ) : (
-              <>
-                <span className="text-2xl">🔬</span>
-                <span>
-                  {isMarathi ? 'रोग तपासा' : 'Detect Disease'}
-                </span>
-              </>
-            )}
-          </button>
-          <p className="text-center text-green-600 text-xs mt-2">
-            {isMarathi
-              ? 'Gemini AI द्वारे विश्लेषण'
-              : 'Powered by Gemini AI'}
-          </p>
-        </div>
-      )}
-
-      {/* STEP 4 — REDESIGN THE ERROR MESSAGE */}
-      {error && (
-        <div className="mx-4 mb-5 bg-red-50 border border-red-200
-                        rounded-2xl p-4 flex gap-3 items-start">
-          <span className="text-2xl flex-shrink-0">⚠️</span>
-          <div>
-            <p className="font-medium text-red-700 text-sm mb-0.5">
-              {isMarathi ? 'त्रुटी आली' : 'Something went wrong'}
-            </p>
-            <p className="text-red-600 text-sm">{error}</p>
-            <button
-              onClick={() => setError(null)}
-              className="text-red-50 text-xs underline mt-1"
-              style={{ color: '#ef4444' }}
-            >
-              {isMarathi ? 'पुन्हा प्रयत्न करा' : 'Try again'}
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* STEP 5 — REDESIGN THE TIPS SECTION */}
-      {!imageURL && (
-        <div className="px-4 mb-6">
-          <h3 className="font-semibold text-green-800 mb-3 flex items-center gap-2">
-            <span>💡</span>
-            {isMarathi ? 'चांगल्या निकालासाठी टिप्स' : 'Tips for Better Results'}
-          </h3>
-          <div className="grid grid-cols-2 gap-3">
-
-            <div className="bg-white rounded-2xl p-3 shadow-sm
-                            border border-green-100 flex gap-2 items-start">
-              <span className="text-xl flex-shrink-0">📸</span>
-              <p className="text-xs text-green-700 leading-relaxed">
-                {isMarathi
-                  ? 'पानाचा जवळचा स्पष्ट फोटो घ्या'
-                  : 'Take a clear close-up of the leaf'}
-              </p>
-            </div>
-
-            <div className="bg-white rounded-2xl p-3 shadow-sm
-                            border border-green-100 flex gap-2 items-start">
-              <span className="text-xl flex-shrink-0">☀️</span>
-              <p className="text-xs text-green-700 leading-relaxed">
-                {isMarathi
-                  ? 'चांगल्या प्रकाशात फोटो काढा'
-                  : 'Ensure good natural lighting'}
-              </p>
-            </div>
-
-            <div className="bg-white rounded-2xl p-3 shadow-sm
-                            border border-green-100 flex gap-2 items-start">
-              <span className="text-xl flex-shrink-0">🍃</span>
-              <p className="text-xs text-green-700 leading-relaxed">
-                {isMarathi
-                  ? 'एकाच पानावर लक्ष केंद्रित करा'
-                  : 'Focus on a single leaf only'}
-              </p>
-            </div>
-
-            <div className="bg-white rounded-2xl p-3 shadow-sm
-                            border border-green-100 flex gap-2 items-start">
-              <span className="text-xl flex-shrink-0">🚿</span>
-              <p className="text-xs text-green-700 leading-relaxed">
-                {isMarathi
-                  ? 'धुळीने माखलेले पान साफ करा'
-                  : 'Clean dusty leaves before scan'}
-              </p>
-            </div>
-
-          </div>
-        </div>
-      )}
-
-      {/* STEP 8 — WRAP RESULT AND BUTTONS */}
-      <div className="px-4 space-y-4">
-        <DiseaseResultCard
-          result={result}
-          language={language}
-          onReadAloud={handleReadAloud}
-          onSave={handleSave}
+        {/* 2. Upload Card */}
+        <UploadCard
+          imageURL={imageURL}
+          onReset={handleReset}
+          onFileSelect={handleImageChange}
+          fileInputRef={fileInputRef}
+          isMarathi={isMarathi}
         />
+
+        {/* 3. CTA Button (Large centered button) */}
+        {imageURL && !result && (
+          <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}>
+            <button
+              onClick={handleScan}
+              disabled={loading}
+              className="w-full bg-green-600 hover:bg-green-700 disabled:bg-green-300 text-white font-black py-4 rounded-2xl text-xl transition-all shadow-xl shadow-green-200 dark:shadow-none flex items-center justify-center gap-3"
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="animate-spin" size={24} />
+                  <span>{isMarathi ? 'AI विश्लेषण होत आहे...' : 'Analysing your crop...'}</span>
+                </>
+              ) : (
+                <>
+                  <Search size={24} />
+                  <span>{isMarathi ? 'माझ्या पिकाची तपासणी करा' : 'Scan My Crop'}</span>
+                </>
+              )}
+            </button>
+          </motion.div>
+        )}
+
+        {/* 4. Tips Grid (Hidden after upload/during loading to keep focus) */}
+        {!result && !loading && <TipsGrid isMarathi={isMarathi} />}
+
+        {/* Error State */}
+        <AnimatePresence>
+          {error && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 10 }}
+              className="bg-red-50 dark:bg-red-900/20 border-2 border-red-100 dark:border-red-900/30 rounded-2xl p-4 text-red-700 dark:text-red-400 font-bold flex items-center gap-3"
+            >
+              <AlertCircle size={24} />
+              {error}
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* 5. Result Section */}
+        <AnimatePresence>
+          {result && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="space-y-6"
+            >
+              <DiseaseResultCard
+                result={result}
+                language={language}
+                onReadAloud={handleReadAloud}
+                onSave={handleSave}
+              />
+              
+              <button
+                onClick={handleReset}
+                className="w-full py-4 rounded-2xl border-2 border-green-600 text-green-600 font-bold hover:bg-green-50 transition-colors flex items-center justify-center gap-2"
+              >
+                <Camera size={20} />
+                {isMarathi ? 'दुसरा फोटो स्कॅन करा' : 'Scan Another Photo'}
+              </button>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
-
-      {/* STEP 6 — REDESIGN SCAN AGAIN BUTTON */}
-      {result && (
-        <div className="px-4 mt-6 mb-8">
-          <button
-            onClick={handleReset}
-            className="w-full border-2 border-green-500 text-green-600
-                       font-semibold py-4 rounded-3xl hover:bg-green-50
-                       active:scale-95 transition-all flex items-center
-                       justify-center gap-2"
-          >
-            <span className="text-xl">📷</span>
-            <span>
-              {isMarathi ? 'नवीन फोटो स्कॅन करा' : 'Scan Another Photo'}
-            </span>
-          </button>
-        </div>
-      )}
-
     </div>
   );
 };
