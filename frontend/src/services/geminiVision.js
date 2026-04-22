@@ -46,14 +46,13 @@ Rules:
 
 /**
  * Main function to analyze crop image using Gemini Vision
- * Uses Gemini 2.0 Flash as requested by user.
+ * Includes automatic retry for 503 errors (Service Unavailable)
  */
-export const analyzeCropDisease = async (imageFile) => {
+export const analyzeCropDisease = async (imageFile, retryCount = 0) => {
   if (!API_KEY) {
     throw new Error('Gemini API key is not configured.');
   }
 
-  // Strictly use Gemini 2.5 Flash as requested by user
   const modelName = 'gemini-2.5-flash';
 
   try {
@@ -76,13 +75,8 @@ export const analyzeCropDisease = async (imageFile) => {
     ]);
 
     const responseText = result.response.text();
-    
-    // Robust JSON extraction: find the first '{' and last '}'
     const jsonMatch = responseText.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) {
-      throw new Error('JSON_PARSE_ERROR');
-    }
-    
+    if (!jsonMatch) throw new Error('JSON_PARSE_ERROR');
     const parsed = JSON.parse(jsonMatch[0]);
 
     return {
@@ -102,18 +96,21 @@ export const analyzeCropDisease = async (imageFile) => {
     };
 
   } catch (error) {
-    console.error(`Gemini 2.0 Analysis Error:`, error);
+    console.error(`Gemini Attempt ${retryCount + 1} Failed:`, error);
 
-    // Specific handling for Quota/Rate Limit (429)
+    // Automatic retry for 503 (Service Unavailable) up to 2 times
+    if (error.message?.includes('503') && retryCount < 2) {
+      console.log('Retrying in 2 seconds due to 503 error...');
+      await new Promise(r => setTimeout(r, 2000));
+      return analyzeCropDisease(imageFile, retryCount + 1);
+    }
+
     if (error.message?.includes('429') || error.message?.includes('quota')) {
       throw new Error('QUOTA_EXCEEDED');
     }
-
-    // Specific handling for Model Not Found (404)
     if (error.message?.includes('404')) {
       throw new Error('MODEL_NOT_FOUND');
     }
-
     throw error;
   }
 };
