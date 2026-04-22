@@ -105,7 +105,7 @@ const UploadCard = ({ imageURL, onReset, onFileSelect, fileInputRef, isMarathi }
       accept="image/*"
       capture="environment"
       className="hidden"
-      onChange={handleImageChange}
+      onChange={onFileSelect}
     />
   </div>
 );
