@@ -92,6 +92,20 @@ const DiseaseResultCard = ({ result, language, onReadAloud, onSave }) => {
         </div>
       )}
 
+      {/* Immediate Action Alert */}
+      {result.immediate_action && result.severity !== 'None' && (
+        <div className="bg-red-50 border border-red-300 rounded-xl p-3 mb-3">
+          <p className="text-sm font-medium text-red-700 mb-1">
+            ⚡ {isMarathi ? 'आत्ता करा' : 'Do This Now'}
+          </p>
+          <p className="text-sm text-red-600">
+            {isMarathi
+              ? result.immediate_action_marathi
+              : result.immediate_action}
+          </p>
+        </div>
+      )}
+
       {/* Action Buttons */}
       <div className="flex gap-2 mt-3">
         <button

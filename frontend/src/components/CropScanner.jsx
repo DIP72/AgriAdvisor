@@ -1,28 +1,8 @@
 import React, { useState, useRef, useContext } from 'react';
-import * as tf from '@tensorflow/tfjs';
-import * as mobilenet from '@tensorflow-models/mobilenet';
 import DiseaseResultCard from './DiseaseResultCard';
-import diseaseInfo from '../data/diseaseInfo.json';
 import { useLanguage } from '../context/LanguageContext';
+import { analyzeCropDisease } from '../services/geminiVision';
 
-// Keyword map — matches MobileNet labels to our disease database
-const DISEASE_KEYWORD_MAP = {
-  'blight': 'Tomato Early Blight',
-  'rust': 'Wheat Brown Rust',
-  'mold': 'Tomato Late Blight',
-  'fungus': 'Tomato Late Blight',
-  'yellow': 'Soybean Yellow Mosaic',
-  'mosaic': 'Soybean Yellow Mosaic',
-  'curl': 'Tomato Leaf Curl',
-  'red': 'Cotton Leaf Reddening',
-  'purple': 'Onion Purple Blotch',
-  'spot': 'Tomato Early Blight',
-  'lesion': 'Onion Purple Blotch',
-  'plant': 'Healthy',
-  'leaf': 'Healthy',
-  'flower': 'Healthy',
-  'vegetable': 'Healthy',
-};
 
 const CropScanner = () => {
   const { language, isMarathi } = useLanguage();
@@ -32,51 +12,10 @@ const CropScanner = () => {
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [modelLoaded, setModelLoaded] = useState(false);
-
-  const modelRef = useRef(null);
   const imageRef = useRef(null);
   const fileInputRef = useRef(null);
 
-  // Load TensorFlow model on first use
-  const loadModel = async () => {
-    if (modelRef.current) return;
-    try {
-      setLoading(true);
-      setError(null);
-      modelRef.current = await mobilenet.load();
-      setModelLoaded(true);
-    } catch (err) {
-      setError(isMarathi
-        ? 'मॉडेल लोड करण्यात त्रुटी. इंटरनेट तपासा.'
-        : 'Error loading model. Please check your internet connection.');
-    } finally {
-      setLoading(false);
-    }
-  };
 
-  // Map MobileNet prediction to our disease database
-  const mapPredictionToDisease = (predictions) => {
-    for (const prediction of predictions) {
-      const label = prediction.className.toLowerCase();
-      for (const [keyword, diseaseName] of Object.entries(DISEASE_KEYWORD_MAP)) {
-        if (label.includes(keyword)) {
-          const info = diseaseInfo[diseaseName];
-          return {
-            name: diseaseName,
-            confidence: Math.round(prediction.probability * 100),
-            ...info
-          };
-        }
-      }
-    }
-    // Default to Healthy if no disease keyword matched
-    return {
-      name: 'Healthy',
-      confidence: Math.round(predictions[0]?.probability * 100 || 85),
-      ...diseaseInfo['Healthy']
-    };
-  };
 
   // Handle image selection from camera or gallery
   const handleImageChange = async (e) => {
@@ -89,33 +28,23 @@ const CropScanner = () => {
     const url = URL.createObjectURL(file);
     setImageURL(url);
     setImage(file);
-
-    // Auto-load model when image is selected
-    if (!modelRef.current) {
-      await loadModel();
-    }
   };
 
   // Run disease detection
   const handleScan = async () => {
-    if (!imageRef.current) return;
+    if (!image) return;
 
     try {
       setLoading(true);
       setError(null);
 
-      if (!modelRef.current) {
-        await loadModel();
-      }
-
-      const predictions = await modelRef.current.classify(imageRef.current);
-      const disease = mapPredictionToDisease(predictions);
+      const disease = await analyzeCropDisease(image);
       setResult(disease);
 
     } catch (err) {
       setError(isMarathi
-        ? 'स्कॅन करताना त्रुटी आली. पुन्हा प्रयत्न करा.'
-        : 'Error during scan. Please try again.');
+        ? `स्कॅन करताना त्रुटी आली: ${err.message}`
+        : `Scan failed: ${err.message}`);
     } finally {
       setLoading(false);
     }
@@ -125,8 +54,12 @@ const CropScanner = () => {
   const handleReadAloud = () => {
     if (!result) return;
     const text = isMarathi
-      ? `${result.marathi}. ${result.description_marathi}. उपाय: ${result.organic_marathi}`
-      : `${result.name}. ${result.description}. Treatment: ${result.organic_treatment}`;
+      ? `${result.marathi}. ${result.description_marathi}.
+         उपाय: ${result.organic_marathi}.
+         आत्ता करा: ${result.immediate_action_marathi}`
+      : `${result.name}. ${result.description}.
+         Treatment: ${result.organic_treatment}.
+         Do this now: ${result.immediate_action}`;
 
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = isMarathi ? 'mr-IN' : 'en-IN';
@@ -230,7 +163,7 @@ const CropScanner = () => {
                          transition-all shadow-md"
             >
               {loading
-                ? `⏳ ${isMarathi ? 'विश्लेषण होत आहे...' : 'Analysing...'}`
+                ? `⏳ ${isMarathi ? 'AI विश्लेषण होत आहे...' : 'AI Analysing...'}`
                 : `🔍 ${isMarathi ? 'रोग तपासा' : 'Scan for Disease'}`}
             </button>
           )}
