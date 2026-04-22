@@ -2,18 +2,13 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 
 const API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 
-// Convert image file to base64 for Gemini API
-const fileToBase64 = (file) => {
-  return new Promise((resolve, reject) => {
+const fileToBase64 = (file) =>
+  new Promise((resolve, reject) => {
     const reader = new FileReader();
-    reader.onload = () => {
-      const base64 = reader.result.split(',')[1];
-      resolve(base64);
-    };
+    reader.onload = () => resolve(reader.result.split(',')[1]);
     reader.onerror = reject;
     reader.readAsDataURL(file);
   });
-};
 
 const DISEASE_DETECTION_PROMPT = `
 You are an expert agricultural scientist specializing in crop diseases
@@ -28,89 +23,141 @@ no code blocks, just pure JSON:
   "confidence": 85,
   "severity": "High",
   "is_healthy": false,
-  "description": "Brief description of the disease in 1-2 sentences",
-  "description_marathi": "Same description in Marathi script",
-  "organic_treatment": "Organic treatment advice in 1-2 sentences",
-  "organic_marathi": "Same organic treatment in Marathi script",
+  "description": "Brief description in 1-2 sentences",
+  "description_marathi": "Same in Marathi script",
+  "organic_treatment": "Organic treatment in 1-2 sentences",
+  "organic_marathi": "Same in Marathi script",
   "chemical_treatment": "Chemical treatment with product name and dosage",
-  "chemical_marathi": "Same chemical treatment in Marathi script",
+  "chemical_marathi": "Same in Marathi script",
   "immediate_action": "One urgent action the farmer must take today",
-  "immediate_action_marathi": "Same urgent action in Marathi script"
+  "immediate_action_marathi": "Same in Marathi script"
 }
 
 Rules:
-- severity must be exactly one of: "High", "Medium", "Low", "None"
-- confidence must be a number between 0 and 100
+- severity must be exactly: "High", "Medium", "Low", or "None"
+- confidence is a number 0-100
 - All Marathi text must be Devanagari script
 `;
 
+const delay = (ms) => new Promise((r) => setTimeout(r, ms));
+
 /**
- * Main function to analyze crop image using Gemini Vision
- * Includes automatic retry for 503 errors (Service Unavailable)
+ * Parse the retry delay from a Gemini API error message.
+ * Returns milliseconds to wait, or null if not found.
+ * The error message contains e.g. "retryDelay":"16s"
  */
-export const analyzeCropDisease = async (imageFile, retryCount = 0) => {
-  if (!API_KEY) {
-    throw new Error('Gemini API key is not configured.');
-  }
-
-  const modelName = 'gemini-2.5-flash';
-
+const parseRetryDelay = (errMessage) => {
   try {
-    const genAI = new GoogleGenerativeAI(API_KEY);
-    const model = genAI.getGenerativeModel({ model: modelName });
+    // Try to extract retryDelay from the JSON in the error message
+    const match = errMessage.match(/"retryDelay"\s*:\s*"([\d.]+)s"/);
+    if (match) {
+      const seconds = Math.ceil(parseFloat(match[1]));
+      return (seconds + 2) * 1000; // add 2s buffer
+    }
+  } catch (_) {}
+  return null;
+};
 
-    const base64Image = await fileToBase64(imageFile);
-    const mimeType = imageFile.type || 'image/jpeg';
+/**
+ * Analyze crop disease image using Gemini 2.5 Flash.
+ *
+ * Error handling:
+ *  - 503 (high demand): retry with exponential backoff (5s, 10s, 15s, 20s, 25s)
+ *  - 429 (rate limit):  read the retryDelay from the error and wait exactly that long,
+ *                       then retry (up to 3 times). Only throw QUOTA_EXCEEDED if the
+ *                       daily limit is truly exhausted (no retryDelay in the error).
+ *
+ * @param {File}     imageFile
+ * @param {Function} onStatus  optional (msg: string) => void
+ */
+export const analyzeCropDisease = async (imageFile, onStatus = null) => {
+  if (!API_KEY) throw new Error('Gemini API key is not configured.');
 
-    const imagePart = {
-      inlineData: {
-        data: base64Image,
-        mimeType: mimeType
+  const MODEL = 'gemini-2.5-flash';
+  const MAX_ATTEMPTS = 6;
+
+  const genAI = new GoogleGenerativeAI(API_KEY);
+  const model = genAI.getGenerativeModel({ model: MODEL });
+
+  let attempt503 = 0;
+  let attempt429 = 0;
+
+  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+    try {
+      onStatus?.(attempt === 1
+        ? 'Scanning with Gemini 2.5 Flash...'
+        : `Retrying... (attempt ${attempt})`);
+
+      const base64Image = await fileToBase64(imageFile);
+      const mimeType = imageFile.type || 'image/jpeg';
+
+      const result = await model.generateContent([
+        DISEASE_DETECTION_PROMPT,
+        { inlineData: { data: base64Image, mimeType } }
+      ]);
+
+      const text = result.response.text();
+      const jsonMatch = text.match(/\{[\s\S]*\}/);
+      if (!jsonMatch) throw new Error('JSON_PARSE_ERROR');
+
+      const p = JSON.parse(jsonMatch[0]);
+      return {
+        name: p.disease_name,
+        marathi: p.marathi_name || p.disease_name,
+        confidence: Math.min(100, Math.max(0, Number(p.confidence))),
+        severity: p.severity,
+        is_healthy: p.is_healthy || false,
+        description: p.description || '',
+        description_marathi: p.description_marathi || '',
+        organic_treatment: p.organic_treatment || '',
+        organic_marathi: p.organic_marathi || '',
+        chemical_treatment: p.chemical_treatment || '',
+        chemical_marathi: p.chemical_marathi || '',
+        immediate_action: p.immediate_action || '',
+        immediate_action_marathi: p.immediate_action_marathi || ''
+      };
+
+    } catch (err) {
+      const msg = err.message || '';
+      console.warn(`Attempt ${attempt} failed:`, msg.slice(0, 120));
+
+      // ── 429: Rate limit ────────────────────────────────────────────
+      if (msg.includes('429') || msg.toLowerCase().includes('quota')) {
+        attempt429++;
+        const waitMs = parseRetryDelay(msg);
+
+        if (waitMs && attempt429 <= 3) {
+          // The API told us exactly how long to wait — respect it
+          const waitSec = Math.ceil(waitMs / 1000);
+          onStatus?.(`Rate limited. Waiting ${waitSec}s then auto-retrying...`);
+          await delay(waitMs);
+          continue;
+        }
+
+        // No retry delay in the error = truly exhausted daily quota
+        throw new Error('QUOTA_EXCEEDED');
       }
-    };
 
-    const result = await model.generateContent([
-      DISEASE_DETECTION_PROMPT,
-      imagePart
-    ]);
+      // ── 503: Server busy ───────────────────────────────────────────
+      if (msg.includes('503')) {
+        attempt503++;
+        if (attempt503 <= 5) {
+          const wait503 = attempt503 * 5000; // 5s, 10s, 15s, 20s, 25s
+          const waitSec = attempt503 * 5;
+          onStatus?.(`Server busy, retrying in ${waitSec}s... (${attempt503}/5)`);
+          await delay(wait503);
+          continue;
+        }
+        throw new Error('SERVICE_UNAVAILABLE');
+      }
 
-    const responseText = result.response.text();
-    const jsonMatch = responseText.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) throw new Error('JSON_PARSE_ERROR');
-    const parsed = JSON.parse(jsonMatch[0]);
+      // ── JSON parse issue ───────────────────────────────────────────
+      if (msg === 'JSON_PARSE_ERROR') throw err;
 
-    return {
-      name: parsed.disease_name,
-      marathi: parsed.marathi_name || parsed.disease_name,
-      confidence: Math.min(100, Math.max(0, Number(parsed.confidence))),
-      severity: parsed.severity,
-      is_healthy: parsed.is_healthy || false,
-      description: parsed.description || '',
-      description_marathi: parsed.description_marathi || '',
-      organic_treatment: parsed.organic_treatment || '',
-      organic_marathi: parsed.organic_marathi || '',
-      chemical_treatment: parsed.chemical_treatment || '',
-      chemical_marathi: parsed.chemical_marathi || '',
-      immediate_action: parsed.immediate_action || '',
-      immediate_action_marathi: parsed.immediate_action_marathi || ''
-    };
-
-  } catch (error) {
-    console.error(`Gemini Attempt ${retryCount + 1} Failed:`, error);
-
-    // Automatic retry for 503 (Service Unavailable) up to 2 times
-    if (error.message?.includes('503') && retryCount < 2) {
-      console.log('Retrying in 2 seconds due to 503 error...');
-      await new Promise(r => setTimeout(r, 2000));
-      return analyzeCropDisease(imageFile, retryCount + 1);
+      // ── Other errors ───────────────────────────────────────────────
+      throw err;
     }
-
-    if (error.message?.includes('429') || error.message?.includes('quota')) {
-      throw new Error('QUOTA_EXCEEDED');
-    }
-    if (error.message?.includes('404')) {
-      throw new Error('MODEL_NOT_FOUND');
-    }
-    throw error;
   }
+
+  throw new Error('SERVICE_UNAVAILABLE');
 };
