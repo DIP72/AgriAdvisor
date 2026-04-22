@@ -16,33 +16,32 @@ import DiseaseResultCard from './DiseaseResultCard';
 import { useLanguage } from '../context/LanguageContext';
 import { analyzeCropDisease } from '../services/geminiVision';
 
-// --- Sub-Components ---
+// --- Sub-Components with Inline Style Fallbacks ---
 
-/**
- * 🌿 1. Header Section (Hero Card)
- */
 const HeaderCard = ({ isMarathi, setScreen }) => (
   <motion.div 
     initial={{ opacity: 0, y: -20 }}
     animate={{ opacity: 1, y: 0 }}
-    className="bg-white dark:bg-gray-800 rounded-3xl p-6 shadow-md border border-green-100 dark:border-gray-700 flex items-center justify-between"
+    className="bg-white dark:bg-gray-800 rounded-3xl p-6 shadow-md border border-green-100 dark:border-gray-700"
+    style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
   >
-    <div className="flex items-center gap-4">
+    <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
       <button 
         onClick={() => setScreen('home')}
         className="p-2 hover:bg-green-50 dark:hover:bg-gray-700 rounded-full transition-colors text-green-600"
+        style={{ border: 'none', background: 'transparent', cursor: 'pointer' }}
       >
         <ArrowLeft size={24} />
       </button>
-      <div className="flex items-center gap-3">
-        <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-xl">
+      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+        <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-xl" style={{ display: 'flex' }}>
           <Leaf className="text-green-600" size={24} />
         </div>
         <div>
-          <h1 className="text-xl font-bold text-gray-900 dark:text-white leading-none">
+          <h1 className="text-xl font-bold text-gray-900 dark:text-white" style={{ margin: 0, lineHeight: 1 }}>
             {isMarathi ? 'पीक रोग स्कॅनर' : 'Crop Disease Scanner'}
           </h1>
-          <p className="text-gray-500 dark:text-gray-400 text-xs mt-1 font-medium">
+          <p className="text-gray-500 dark:text-gray-400 text-xs mt-1 font-medium" style={{ margin: 0 }}>
             {isMarathi ? 'झटपट रोग ओळखा' : 'Scan your crop leaf to detect disease instantly'}
           </p>
         </div>
@@ -52,44 +51,42 @@ const HeaderCard = ({ isMarathi, setScreen }) => (
   </motion.div>
 );
 
-/**
- * 📸 2. Upload Section
- */
 const UploadCard = ({ imageURL, onReset, onFileSelect, fileInputRef, isMarathi }) => (
-  <div className="bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-md border border-green-50 dark:border-gray-700 flex flex-col items-center text-center">
+  <div className="bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-md border border-green-50 dark:border-gray-700" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
     {!imageURL ? (
       <div 
         onClick={() => fileInputRef.current?.click()}
-        className="w-full border-4 border-dashed border-green-100 dark:border-gray-700 rounded-2xl p-10 flex flex-col items-center cursor-pointer hover:bg-green-50/50 dark:hover:bg-gray-700/50 transition-all group"
+        className="w-full border-4 border-dashed border-green-100 dark:border-gray-700 rounded-2xl p-10 group"
+        style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', cursor: 'pointer' }}
       >
-        <div className="w-16 h-16 bg-green-100 dark:bg-green-900/20 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+        <div className="w-16 h-16 bg-green-100 dark:bg-green-900/20 rounded-full mb-4 group-hover:scale-110 transition-transform" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <Camera size={32} className="text-green-600" />
         </div>
-        <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-1">
+        <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-1" style={{ margin: '0 0 4px 0' }}>
           {isMarathi ? 'फोटो निवडा' : 'Select a Photo'}
         </h3>
-        <p className="text-sm text-gray-400 dark:text-gray-500 mb-6">
+        <p className="text-sm text-gray-400 dark:text-gray-500 mb-6" style={{ margin: '0 0 24px 0' }}>
           {isMarathi ? 'कॅमेरा किंवा गॅलरीतून निवडा' : 'Open camera or upload from gallery'}
         </p>
         
-        <div className="flex gap-4 w-full max-w-xs">
-          <button className="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-xl flex items-center justify-center gap-2 transition-all text-sm">
+        <div style={{ display: 'flex', gap: '16px', width: '100%', maxWidth: '320px' }}>
+          <div className="flex-1 bg-green-600 text-white font-bold py-3 px-4 rounded-xl flex items-center justify-center gap-2 text-sm shadow-md">
             <Camera size={18} />
             {isMarathi ? 'कॅमेरा' : 'Camera'}
-          </button>
-          <button className="flex-1 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-200 font-bold py-3 px-4 rounded-xl flex items-center justify-center gap-2 transition-all text-sm">
+          </div>
+          <div className="flex-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 font-bold py-3 px-4 rounded-xl flex items-center justify-center gap-2 text-sm">
             <ImageIcon size={18} />
             {isMarathi ? 'गॅलरी' : 'Gallery'}
-          </button>
+          </div>
         </div>
       </div>
     ) : (
       <div className="w-full relative rounded-2xl overflow-hidden shadow-sm">
-        <img src={imageURL} alt="Preview" className="w-full h-64 object-cover" />
+        <img src={imageURL} alt="Preview" className="w-full h-64 object-cover" style={{ display: 'block' }} />
         <div className="absolute inset-0 bg-black/20" />
         <button
-          onClick={onReset}
-          className="absolute top-4 right-4 bg-white/90 dark:bg-gray-800/90 p-2 rounded-xl text-red-500 shadow-lg hover:scale-110 transition-transform"
+          onClick={(e) => { e.stopPropagation(); onReset(); }}
+          className="absolute top-4 right-4 bg-white/90 dark:bg-gray-800/90 p-2 rounded-xl text-red-500 shadow-lg hover:scale-110 transition-transform border-none cursor-pointer"
         >
           <RotateCcw size={20} />
         </button>
@@ -110,9 +107,6 @@ const UploadCard = ({ imageURL, onReset, onFileSelect, fileInputRef, isMarathi }
   </div>
 );
 
-/**
- * 💡 3. Tips Grid
- */
 const TipsGrid = ({ isMarathi }) => {
   const tips = [
     { icon: Search, label: isMarathi ? 'स्पष्ट जवळचा फोटो घ्या' : 'Clear close-up photo' },
@@ -122,13 +116,13 @@ const TipsGrid = ({ isMarathi }) => {
   ];
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4" style={{ display: 'grid' }}>
       {tips.map((tip, idx) => (
-        <div key={idx} className="bg-green-50/50 dark:bg-green-900/10 border border-green-100 dark:border-green-900/30 p-4 rounded-2xl flex items-center gap-4 shadow-sm">
-          <div className="bg-white dark:bg-gray-800 p-2 rounded-xl text-green-600 shadow-sm shrink-0">
+        <div key={idx} className="bg-green-50/50 dark:bg-green-900/10 border border-green-100 dark:border-green-900/30 p-4 rounded-2xl shadow-sm" style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          <div className="bg-white dark:bg-gray-800 p-2 rounded-xl text-green-600 shadow-sm shrink-0" style={{ display: 'flex' }}>
             <tip.icon size={20} />
           </div>
-          <p className="text-xs font-bold text-gray-700 dark:text-gray-300 leading-snug">
+          <p className="text-xs font-bold text-gray-700 dark:text-gray-300" style={{ margin: 0, lineHeight: 1.2 }}>
             {tip.label}
           </p>
         </div>
@@ -196,7 +190,6 @@ const CropScanner = ({ setScreen }) => {
   };
 
   const handleSave = () => {
-    // Added logging logic from Gemini branch
     const savedResult = {
       disease: result.name,
       confidence: result.confidence,
@@ -210,7 +203,7 @@ const CropScanner = ({ setScreen }) => {
 
   return (
     <div className="w-full min-h-screen bg-gray-50 dark:bg-gray-900/50 pb-20">
-      <div className="max-w-4xl mx-auto px-4 py-8 space-y-6">
+      <div className="max-w-4xl mx-auto px-4 py-8 space-y-6" style={{ width: '100%', maxWidth: '896px', marginLeft: 'auto', marginRight: 'auto' }}>
         
         {/* 1. Header Card */}
         <HeaderCard isMarathi={isMarathi} setScreen={setScreen} />
@@ -230,7 +223,8 @@ const CropScanner = ({ setScreen }) => {
             <button
               onClick={handleScan}
               disabled={loading}
-              className="w-full bg-green-600 hover:bg-green-700 disabled:bg-green-300 text-white font-black py-4 rounded-2xl text-xl transition-all shadow-xl shadow-green-200 dark:shadow-none flex items-center justify-center gap-3"
+              className="w-full bg-green-600 hover:bg-green-700 disabled:bg-green-300 text-white font-black py-4 rounded-2xl text-xl transition-all shadow-xl shadow-green-200 dark:shadow-none"
+              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px', width: '100%', border: 'none', cursor: 'pointer' }}
             >
               {loading ? (
                 <>
@@ -257,10 +251,11 @@ const CropScanner = ({ setScreen }) => {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 10 }}
-              className="bg-red-50 dark:bg-red-900/20 border-2 border-red-100 dark:border-red-900/30 rounded-2xl p-4 text-red-700 dark:text-red-400 font-bold flex items-center gap-3"
+              className="bg-red-50 dark:bg-red-900/20 border-2 border-red-100 dark:border-red-900/30 rounded-2xl p-4 text-red-700 dark:text-red-400 font-bold"
+              style={{ display: 'flex', alignItems: 'center', gap: '12px' }}
             >
-              <AlertCircle size={24} />
-              {error}
+              <AlertCircle size={24} style={{ flexShrink: 0 }} />
+              <span style={{ fontSize: '14px' }}>{error}</span>
             </motion.div>
           )}
         </AnimatePresence>
@@ -271,7 +266,7 @@ const CropScanner = ({ setScreen }) => {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="space-y-6"
+              style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}
             >
               <DiseaseResultCard
                 result={result}
@@ -282,7 +277,8 @@ const CropScanner = ({ setScreen }) => {
               
               <button
                 onClick={handleReset}
-                className="w-full py-4 rounded-2xl border-2 border-green-600 text-green-600 font-bold hover:bg-green-50 transition-colors flex items-center justify-center gap-2"
+                className="w-full py-4 rounded-2xl border-2 border-green-600 text-green-600 font-bold hover:bg-green-50 transition-colors"
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', width: '100%', background: 'transparent', cursor: 'pointer' }}
               >
                 <Camera size={20} />
                 {isMarathi ? 'दुसरा फोटो स्कॅन करा' : 'Scan Another Photo'}
