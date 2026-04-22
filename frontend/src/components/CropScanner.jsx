@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Camera, 
@@ -10,90 +10,89 @@ import {
   Leaf, 
   CheckCircle2, 
   AlertCircle,
-  ArrowLeft
+  ArrowLeft,
+  Clock
 } from 'lucide-react';
 import DiseaseResultCard from './DiseaseResultCard';
 import { useLanguage } from '../context/LanguageContext';
 import { analyzeCropDisease } from '../services/geminiVision';
 
-// --- Sub-Components with Enhanced Centering ---
+// --- Sub-Components with Absolute Centering ---
 
 const HeaderCard = ({ isMarathi, setScreen }) => (
   <motion.div 
     initial={{ opacity: 0, y: -20 }}
     animate={{ opacity: 1, y: 0 }}
-    className="bg-white dark:bg-gray-800 rounded-3xl p-6 shadow-lg border border-green-100 dark:border-gray-700 w-full"
+    className="bg-white dark:bg-gray-800 rounded-3xl p-5 shadow-lg border border-green-100 dark:border-gray-700 w-full max-w-[600px]"
     style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}
   >
-    <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
       <button 
         onClick={() => setScreen('home')}
-        className="p-2 hover:bg-green-50 dark:hover:bg-gray-700 rounded-full transition-colors text-green-600"
-        style={{ border: 'none', background: 'transparent', cursor: 'pointer', display: 'flex' }}
+        className="p-2 hover:bg-green-50 dark:hover:bg-gray-700 rounded-full transition-colors text-green-600 flex items-center justify-center border-none bg-transparent cursor-pointer"
       >
-        <ArrowLeft size={24} />
+        <ArrowLeft size={22} />
       </button>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-        <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-xl" style={{ display: 'flex' }}>
-          <Leaf className="text-green-600" size={24} />
+      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+        <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-xl flex items-center justify-center">
+          <Leaf className="text-green-600" size={22} />
         </div>
-        <div>
-          <h1 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white" style={{ margin: 0, lineHeight: 1.2 }}>
+        <div style={{ textAlign: 'left' }}>
+          <h1 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white m-0 leading-tight">
             {isMarathi ? 'पीक रोग स्कॅनर' : 'Crop Disease Scanner'}
           </h1>
-          <p className="text-gray-500 dark:text-gray-400 text-[10px] sm:text-xs font-medium" style={{ margin: 0 }}>
-            {isMarathi ? 'झटपट रोग ओळखा' : 'Scan your crop leaf to detect disease instantly'}
+          <p className="text-gray-500 dark:text-gray-400 text-[10px] sm:text-xs font-medium m-0">
+            {isMarathi ? 'झटपट रोग ओळखा' : 'Scan your crop leaf instantly'}
           </p>
         </div>
       </div>
     </div>
-    <div className="hidden sm:flex p-2 bg-yellow-50 dark:bg-yellow-900/20 rounded-full">
-      <Sparkles className="text-yellow-500" size={20} />
+    <div className="p-2 bg-yellow-50 dark:bg-yellow-900/20 rounded-full flex items-center justify-center">
+      <Sparkles className="text-yellow-500" size={18} />
     </div>
   </motion.div>
 );
 
 const UploadCard = ({ imageURL, onReset, onFileSelect, fileInputRef, isMarathi }) => (
-  <div className="bg-white dark:bg-gray-800 rounded-3xl p-6 sm:p-8 shadow-lg border border-green-50 dark:border-gray-700 w-full" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
+  <div className="bg-white dark:bg-gray-800 rounded-3xl p-6 shadow-lg border border-green-50 dark:border-gray-700 w-full max-w-[600px]" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
     {!imageURL ? (
       <div 
         onClick={() => fileInputRef.current?.click()}
-        className="w-full border-4 border-dashed border-green-100 dark:border-gray-700 rounded-2xl p-8 sm:p-12 group transition-all"
-        style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', cursor: 'pointer', background: 'rgba(232, 245, 233, 0.3)' }}
+        className="w-full border-4 border-dashed border-green-100 dark:border-gray-700 rounded-2xl p-8 sm:p-10 group transition-all bg-green-50/20 dark:bg-green-900/5 flex flex-col items-center justify-center cursor-pointer"
       >
-        <div className="w-20 h-20 bg-green-100 dark:bg-green-900/20 rounded-full mb-6 group-hover:scale-110 transition-transform" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <Camera size={40} className="text-green-600" />
+        <div className="w-16 h-16 bg-green-100 dark:bg-green-900/20 rounded-full mb-4 group-hover:scale-110 transition-transform flex items-center justify-center">
+          <Camera size={32} className="text-green-600" />
         </div>
-        <h3 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-2">
+        <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200 m-0 mb-1">
           {isMarathi ? 'फोटो निवडा' : 'Select a Photo'}
         </h3>
-        <p className="text-sm text-gray-500 dark:text-gray-400 mb-8 max-w-xs">
+        <p className="text-xs text-gray-500 dark:text-gray-400 m-0 mb-6">
           {isMarathi ? 'कॅमेरा किंवा गॅलरीतून निवडा' : 'Open camera or upload from gallery'}
         </p>
         
-        <div className="flex gap-4 w-full max-w-sm" style={{ display: 'flex', width: '100%' }}>
-          <button className="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold py-3.5 px-4 rounded-2xl flex items-center justify-center gap-2 text-sm shadow-lg shadow-green-200 dark:shadow-none transition-all border-none cursor-pointer">
-            <Camera size={20} />
+        <div style={{ display: 'flex', gap: '12px', width: '100%', maxWidth: '280px' }}>
+          <div className="flex-1 bg-green-600 text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2 text-xs shadow-md">
+            <Camera size={16} />
             {isMarathi ? 'कॅमेरा' : 'Camera'}
-          </button>
-          <button className="flex-1 bg-white dark:bg-gray-700 border-2 border-green-100 dark:border-gray-600 text-gray-700 dark:text-gray-200 font-bold py-3.5 px-4 rounded-2xl flex items-center justify-center gap-2 text-sm hover:bg-green-50 dark:hover:bg-gray-600 transition-all cursor-pointer">
-            <ImageIcon size={20} />
+          </div>
+          <div className="flex-1 bg-white dark:bg-gray-700 border border-green-100 dark:border-gray-600 text-gray-700 dark:text-gray-200 font-bold py-3 rounded-xl flex items-center justify-center gap-2 text-xs">
+            <ImageIcon size={16} />
             {isMarathi ? 'गॅलरी' : 'Gallery'}
-          </button>
+          </div>
         </div>
       </div>
     ) : (
-      <div className="w-full relative rounded-2xl overflow-hidden shadow-xl ring-4 ring-green-50 dark:ring-gray-700">
-        <img src={imageURL} alt="Preview" className="w-full h-72 object-cover" style={{ display: 'block' }} />
+      <div className="w-full relative rounded-2xl overflow-hidden shadow-xl border border-gray-100 dark:border-gray-700">
+        <img src={imageURL} alt="Preview" className="w-full h-64 object-cover block" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
         <button
           onClick={(e) => { e.stopPropagation(); onReset(); }}
-          className="absolute top-4 right-4 bg-white/95 dark:bg-gray-800/95 p-2.5 rounded-2xl text-red-500 shadow-xl hover:scale-110 transition-transform border-none cursor-pointer flex"
+          className="absolute top-3 right-3 bg-white/95 dark:bg-gray-800/95 p-2 rounded-xl text-red-500 shadow-lg hover:scale-110 transition-transform border-none cursor-pointer flex items-center justify-center"
         >
-          <RotateCcw size={22} />
+          <RotateCcw size={18} />
         </button>
-        <div className="absolute bottom-4 left-4 flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-xl text-xs font-black shadow-xl">
-          <CheckCircle2 size={16} />
+        <div className="absolute bottom-3 left-3 flex items-center gap-2 bg-green-600 text-white px-3 py-1.5 rounded-lg text-[10px] font-black shadow-lg">
+          <CheckCircle2 size={12} />
           {isMarathi ? 'फोटो तयार आहे' : 'Photo Ready'}
         </div>
       </div>
@@ -118,13 +117,13 @@ const TipsGrid = ({ isMarathi }) => {
   ];
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
+    <div className="w-full max-w-[600px] grid grid-cols-2 gap-3">
       {tips.map((tip, idx) => (
-        <div key={idx} className="bg-white dark:bg-gray-800 border border-green-100 dark:border-gray-700 p-4 rounded-2xl shadow-sm flex items-center gap-4 transition-all hover:border-green-300">
-          <div className="bg-green-100 dark:bg-green-900/30 p-2.5 rounded-xl text-green-600 shrink-0 flex">
-            <tip.icon size={20} />
+        <div key={idx} className="bg-white dark:bg-gray-800 border border-green-100 dark:border-gray-700 p-3 rounded-2xl shadow-sm flex items-center gap-3">
+          <div className="bg-green-100 dark:bg-green-900/30 p-2 rounded-lg text-green-600 shrink-0 flex items-center justify-center">
+            <tip.icon size={16} />
           </div>
-          <p className="text-xs font-bold text-gray-700 dark:text-gray-200 leading-snug m-0">
+          <p className="text-[10px] font-bold text-gray-700 dark:text-gray-200 leading-tight m-0 text-left">
             {tip.label}
           </p>
         </div>
@@ -143,8 +142,19 @@ const CropScanner = ({ setScreen }) => {
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [retryAfter, setRetryAfter] = useState(0);
 
   const fileInputRef = useRef(null);
+
+  // Quota Countdown Timer
+  useEffect(() => {
+    if (retryAfter > 0) {
+      const timer = setInterval(() => {
+        setRetryAfter(prev => prev - 1);
+      }, 1000);
+      return () => clearInterval(timer);
+    }
+  }, [retryAfter]);
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -164,7 +174,13 @@ const CropScanner = ({ setScreen }) => {
       const disease = await analyzeCropDisease(image);
       setResult(disease);
     } catch (err) {
-      setError(isMarathi ? `स्कॅन करताना त्रुटी आली: ${err.message}` : `Scan failed: ${err.message}`);
+      // Check for quota error
+      if (err.message?.includes('429') || err.message?.includes('quota')) {
+        setRetryAfter(30);
+        setError(isMarathi ? 'AI कोटा संपला आहे. कृपया ३० सेकंद थांबा.' : 'AI Quota exceeded. Please wait 30 seconds.');
+      } else {
+        setError(isMarathi ? `स्कॅन करताना त्रुटी आली: ${err.message}` : `Scan failed: ${err.message}`);
+      }
     } finally {
       setLoading(false);
     }
@@ -175,6 +191,7 @@ const CropScanner = ({ setScreen }) => {
     setImageURL(null);
     setResult(null);
     setError(null);
+    setRetryAfter(0);
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
@@ -192,20 +209,12 @@ const CropScanner = ({ setScreen }) => {
   };
 
   const handleSave = () => {
-    const savedResult = {
-      disease: result.name,
-      confidence: result.confidence,
-      severity: result.severity,
-      date: new Date().toLocaleDateString('en-IN'),
-      timestamp: Date.now()
-    };
-    console.log('Scan saved:', savedResult);
     alert(isMarathi ? '✅ निकाल जतन केला!' : '✅ Result saved successfully!');
   };
 
   return (
-    <div className="w-full min-h-screen bg-gray-50/50 dark:bg-gray-900/80 pb-32 pt-4 px-4 overflow-y-auto">
-      <div className="max-w-2xl mx-auto space-y-6 flex flex-col items-center">
+    <div className="w-full min-h-screen bg-gray-50/50 dark:bg-gray-900/50 flex flex-col items-center pt-6 px-4 pb-32 overflow-y-auto">
+      <div className="w-full max-w-[600px] flex flex-col items-center gap-6">
         
         {/* 1. Header Card */}
         <HeaderCard isMarathi={isMarathi} setScreen={setScreen} />
@@ -221,25 +230,26 @@ const CropScanner = ({ setScreen }) => {
 
         {/* 3. CTA Button */}
         {imageURL && !result && (
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.95 }} 
-            animate={{ opacity: 1, scale: 1 }}
-            className="w-full"
-          >
+          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="w-full max-w-[600px]">
             <button
               onClick={handleScan}
-              disabled={loading}
-              className="w-full bg-green-600 hover:bg-green-700 disabled:bg-green-300 text-white font-black py-4.5 rounded-3xl text-xl transition-all shadow-xl shadow-green-200 dark:shadow-none flex items-center justify-center gap-4 border-none cursor-pointer"
+              disabled={loading || retryAfter > 0}
+              className="w-full bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white font-black py-4 rounded-3xl text-lg flex items-center justify-center gap-3 shadow-xl border-none cursor-pointer transition-all"
             >
               {loading ? (
                 <>
-                  <Loader2 className="animate-spin" size={28} />
-                  <span>{isMarathi ? 'AI विश्लेषण होत आहे...' : 'Analysing your crop...'}</span>
+                  <Loader2 className="animate-spin" size={24} />
+                  <span>{isMarathi ? 'AI विश्लेषण होत आहे...' : 'Analysing...'}</span>
+                </>
+              ) : retryAfter > 0 ? (
+                <>
+                  <Clock size={24} />
+                  <span>{isMarathi ? `कृपया ${retryAfter} सेकंद थांबा` : `Wait ${retryAfter}s`}</span>
                 </>
               ) : (
                 <>
-                  <Search size={28} />
-                  <span>{isMarathi ? 'माझ्या पिकाची तपासणी करा' : 'Scan My Crop'}</span>
+                  <Search size={24} />
+                  <span>{isMarathi ? 'तपासणी करा' : 'Scan My Crop'}</span>
                 </>
               )}
             </button>
@@ -259,7 +269,7 @@ const CropScanner = ({ setScreen }) => {
               className="bg-red-50 dark:bg-red-900/20 border-2 border-red-100 dark:border-red-900/40 rounded-2xl p-5 text-red-700 dark:text-red-400 font-bold flex items-center gap-4 w-full shadow-sm"
             >
               <AlertCircle size={28} className="shrink-0" />
-              <div className="text-sm">{error}</div>
+              <div className="text-xs text-left leading-relaxed">{error}</div>
             </motion.div>
           )}
         </AnimatePresence>
@@ -270,7 +280,7 @@ const CropScanner = ({ setScreen }) => {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="space-y-6 w-full"
+              className="w-full flex flex-col gap-6"
             >
               <DiseaseResultCard
                 result={result}
