@@ -11,20 +11,21 @@ import {
   CheckCircle2, 
   AlertCircle,
   ArrowLeft,
-  Clock
+  Clock,
+  ShieldAlert
 } from 'lucide-react';
 import DiseaseResultCard from './DiseaseResultCard';
 import { useLanguage } from '../context/LanguageContext';
 import { analyzeCropDisease } from '../services/geminiVision';
 
-// --- Sub-Components with Absolute Centering ---
+// --- Sub-Components ---
 
 const HeaderCard = ({ isMarathi, setScreen }) => (
   <motion.div 
     initial={{ opacity: 0, y: -20 }}
     animate={{ opacity: 1, y: 0 }}
     className="bg-white dark:bg-gray-800 rounded-3xl p-5 shadow-lg border border-green-100 dark:border-gray-700 w-full max-w-[600px]"
-    style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}
+    style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
   >
     <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
       <button 
@@ -146,7 +147,6 @@ const CropScanner = ({ setScreen }) => {
 
   const fileInputRef = useRef(null);
 
-  // Quota Countdown Timer
   useEffect(() => {
     if (retryAfter > 0) {
       const timer = setInterval(() => {
@@ -174,12 +174,21 @@ const CropScanner = ({ setScreen }) => {
       const disease = await analyzeCropDisease(image);
       setResult(disease);
     } catch (err) {
-      // Check for quota error
-      if (err.message?.includes('429') || err.message?.includes('quota')) {
-        setRetryAfter(30);
-        setError(isMarathi ? 'AI कोटा संपला आहे. कृपया ३० सेकंद थांबा.' : 'AI Quota exceeded. Please wait 30 seconds.');
+      if (err.message === 'QUOTA_EXCEEDED') {
+        setRetryAfter(35);
+        setError(isMarathi 
+          ? 'तुमचा रोजचा मोफत कोटा संपला आहे. कृपया ३५ सेकंद थांबा.' 
+          : 'Free daily quota exceeded. Please wait 35 seconds for the next request.');
+      } else if (err.message === 'MODEL_NOT_FOUND') {
+        setError(isMarathi 
+          ? 'Gemini 2.0 मॉडेल उपलब्ध नाही. कृपया तुमचा API की तपासा.' 
+          : 'Gemini 2.0 model not found. Please verify your API key permissions.');
+      } else if (err.message === 'JSON_PARSE_ERROR') {
+        setError(isMarathi 
+          ? 'AI प्रतिसादात त्रुटी आली. कृपया अधिक स्पष्ट फोटोसह पुन्हा प्रयत्न करा.' 
+          : 'AI response error. Please try again with a clearer, more focused photo.');
       } else {
-        setError(isMarathi ? `स्कॅन करताना त्रुटी आली: ${err.message}` : `Scan failed: ${err.message}`);
+        setError(isMarathi ? `स्कॅन अयशस्वी: ${err.message}` : `Scan failed: ${err.message}`);
       }
     } finally {
       setLoading(false);
@@ -234,7 +243,7 @@ const CropScanner = ({ setScreen }) => {
             <button
               onClick={handleScan}
               disabled={loading || retryAfter > 0}
-              className="w-full bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white font-black py-4 rounded-3xl text-lg flex items-center justify-center gap-3 shadow-xl border-none cursor-pointer transition-all"
+              className="w-full bg-green-600 hover:bg-green-700 disabled:bg-gray-300 text-white font-black py-4 rounded-3xl text-lg flex items-center justify-center gap-3 shadow-xl border-none cursor-pointer transition-all"
             >
               {loading ? (
                 <>
@@ -266,10 +275,13 @@ const CropScanner = ({ setScreen }) => {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 10 }}
-              className="bg-red-50 dark:bg-red-900/20 border-2 border-red-100 dark:border-red-900/40 rounded-2xl p-5 text-red-700 dark:text-red-400 font-bold flex items-center gap-4 w-full shadow-sm"
+              className="bg-red-50 dark:bg-red-900/20 border-2 border-red-100 dark:border-red-900/40 rounded-2xl p-5 text-red-700 dark:text-red-400 font-bold flex items-center gap-4 w-full shadow-lg"
             >
-              <AlertCircle size={28} className="shrink-0" />
-              <div className="text-xs text-left leading-relaxed">{error}</div>
+              <ShieldAlert size={28} className="shrink-0 text-red-600 dark:text-red-400" />
+              <div className="text-xs text-left leading-relaxed">
+                <div className="font-black text-sm mb-1">{isMarathi ? 'सूचना' : 'Attention Required'}</div>
+                {error}
+              </div>
             </motion.div>
           )}
         </AnimatePresence>

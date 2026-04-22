@@ -41,80 +41,79 @@ no code blocks, just pure JSON:
 Rules:
 - severity must be exactly one of: "High", "Medium", "Low", "None"
 - confidence must be a number between 0 and 100
-- is_healthy must be true or false
 - All Marathi text must be Devanagari script
 `;
 
 /**
  * Main function to analyze crop image using Gemini Vision
- * Includes retry logic and fallback for model names
+ * Uses Gemini 2.0 Flash as requested by user.
  */
 export const analyzeCropDisease = async (imageFile) => {
   if (!API_KEY) {
     throw new Error('Gemini API key is not configured.');
   }
 
-  // Model hierarchy: trying requested 2.0/2.5 flash first
-  const modelsToTry = ['gemini-2.0-flash', 'gemini-1.5-flash'];
-  let lastError = null;
+  // Strictly use Gemini 2.5 Flash as requested by user
+  const modelName = 'gemini-2.5-flash';
 
-  for (const modelName of modelsToTry) {
-    try {
-      const genAI = new GoogleGenerativeAI(API_KEY);
-      const model = genAI.getGenerativeModel({ model: modelName });
+  try {
+    const genAI = new GoogleGenerativeAI(API_KEY);
+    const model = genAI.getGenerativeModel({ model: modelName });
 
-      const base64Image = await fileToBase64(imageFile);
-      const mimeType = imageFile.type || 'image/jpeg';
+    const base64Image = await fileToBase64(imageFile);
+    const mimeType = imageFile.type || 'image/jpeg';
 
-      const imagePart = {
-        inlineData: {
-          data: base64Image,
-          mimeType: mimeType
-        }
-      };
-
-      const result = await model.generateContent([
-        DISEASE_DETECTION_PROMPT,
-        imagePart
-      ]);
-
-      const responseText = result.response.text();
-      const cleanedResponse = responseText.replace(/```json/g, '').replace(/```/g, '').trim();
-      const parsed = JSON.parse(cleanedResponse);
-
-      return {
-        name: parsed.disease_name,
-        marathi: parsed.marathi_name || parsed.disease_name,
-        confidence: Math.min(100, Math.max(0, Number(parsed.confidence))),
-        severity: parsed.severity,
-        is_healthy: parsed.is_healthy || false,
-        description: parsed.description || '',
-        description_marathi: parsed.description_marathi || '',
-        organic_treatment: parsed.organic_treatment || '',
-        organic_marathi: parsed.organic_marathi || '',
-        chemical_treatment: parsed.chemical_treatment || '',
-        chemical_marathi: parsed.chemical_marathi || '',
-        immediate_action: parsed.immediate_action || '',
-        immediate_action_marathi: parsed.immediate_action_marathi || ''
-      };
-
-    } catch (error) {
-      lastError = error;
-      console.warn(`Model ${modelName} failed, trying next...`, error);
-      
-      // If it's a 503 (High Demand), wait a bit before trying next model
-      if (error.message?.includes('503')) {
-        await new Promise(r => setTimeout(r, 1000));
+    const imagePart = {
+      inlineData: {
+        data: base64Image,
+        mimeType: mimeType
       }
-      
-      // If it's a 404 (Model not found), just continue to next model
-      if (error.message?.includes('404')) continue;
-    }
-  }
+    };
 
-  // If all models failed
-  if (lastError.message?.includes('503')) {
-    throw new Error('Gemini AI is currently overloaded. Please wait 10 seconds and try again.');
+    const result = await model.generateContent([
+      DISEASE_DETECTION_PROMPT,
+      imagePart
+    ]);
+
+    const responseText = result.response.text();
+    
+    // Robust JSON extraction: find the first '{' and last '}'
+    const jsonMatch = responseText.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) {
+      throw new Error('JSON_PARSE_ERROR');
+    }
+    
+    const parsed = JSON.parse(jsonMatch[0]);
+
+    return {
+      name: parsed.disease_name,
+      marathi: parsed.marathi_name || parsed.disease_name,
+      confidence: Math.min(100, Math.max(0, Number(parsed.confidence))),
+      severity: parsed.severity,
+      is_healthy: parsed.is_healthy || false,
+      description: parsed.description || '',
+      description_marathi: parsed.description_marathi || '',
+      organic_treatment: parsed.organic_treatment || '',
+      organic_marathi: parsed.organic_marathi || '',
+      chemical_treatment: parsed.chemical_treatment || '',
+      chemical_marathi: parsed.chemical_marathi || '',
+      immediate_action: parsed.immediate_action || '',
+      immediate_action_marathi: parsed.immediate_action_marathi || ''
+    };
+
+  } catch (error) {
+    console.error(`Gemini 2.0 Analysis Error:`, error);
+
+    // Specific handling for Quota/Rate Limit (429)
+    if (error.message?.includes('429') || error.message?.includes('quota')) {
+      throw new Error('QUOTA_EXCEEDED');
+    }
+
+    // Specific handling for Model Not Found (404)
+    if (error.message?.includes('404')) {
+      throw new Error('MODEL_NOT_FOUND');
+    }
+
+    throw error;
   }
-  throw lastError;
 };
