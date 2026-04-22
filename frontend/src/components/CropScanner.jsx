@@ -4,9 +4,6 @@ import {
   Camera, 
   Image as ImageIcon, 
   Sparkles, 
-  Lightbulb, 
-  Zap, 
-  Info, 
   RotateCcw, 
   Search, 
   Loader2, 
@@ -23,7 +20,6 @@ import { analyzeCropDisease } from '../services/geminiVision';
 
 /**
  * 🌿 1. Header Section (Hero Card)
- * Compact, centered card with title and icon
  */
 const HeaderCard = ({ isMarathi, setScreen }) => (
   <motion.div 
@@ -58,7 +54,6 @@ const HeaderCard = ({ isMarathi, setScreen }) => (
 
 /**
  * 📸 2. Upload Section
- * Centered upload card with dashed border and custom buttons
  */
 const UploadCard = ({ imageURL, onReset, onFileSelect, fileInputRef, isMarathi }) => (
   <div className="bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-md border border-green-50 dark:border-gray-700 flex flex-col items-center text-center">
@@ -110,19 +105,18 @@ const UploadCard = ({ imageURL, onReset, onFileSelect, fileInputRef, isMarathi }
       accept="image/*"
       capture="environment"
       className="hidden"
-      onChange={onFileSelect}
+      onChange={handleImageChange}
     />
   </div>
 );
 
 /**
  * 💡 3. Tips Grid
- * 2 columns on desktop, 1 on mobile
  */
 const TipsGrid = ({ isMarathi }) => {
   const tips = [
     { icon: Search, label: isMarathi ? 'स्पष्ट जवळचा फोटो घ्या' : 'Clear close-up photo' },
-    { icon: Zap, label: isMarathi ? 'चांगला प्रकाश' : 'Good lighting' },
+    { icon: Sparkles, label: isMarathi ? 'चांगला प्रकाश' : 'Good lighting' },
     { icon: Leaf, label: isMarathi ? 'एकाच पानावर लक्ष द्या' : 'Single leaf focus' },
     { icon: AlertCircle, label: isMarathi ? 'स्कॅन करण्यापूर्वी पान स्वच्छ करा' : 'Clean leaf before scan' },
   ];
@@ -202,6 +196,15 @@ const CropScanner = ({ setScreen }) => {
   };
 
   const handleSave = () => {
+    // Added logging logic from Gemini branch
+    const savedResult = {
+      disease: result.name,
+      confidence: result.confidence,
+      severity: result.severity,
+      date: new Date().toLocaleDateString('en-IN'),
+      timestamp: Date.now()
+    };
+    console.log('Scan saved:', savedResult);
     alert(isMarathi ? '✅ निकाल जतन केला!' : '✅ Result saved successfully!');
   };
 
@@ -221,7 +224,7 @@ const CropScanner = ({ setScreen }) => {
           isMarathi={isMarathi}
         />
 
-        {/* 3. CTA Button (Large centered button) */}
+        {/* 3. CTA Button */}
         {imageURL && !result && (
           <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}>
             <button
@@ -244,7 +247,7 @@ const CropScanner = ({ setScreen }) => {
           </motion.div>
         )}
 
-        {/* 4. Tips Grid (Hidden after upload/during loading to keep focus) */}
+        {/* 4. Tips Grid */}
         {!result && !loading && <TipsGrid isMarathi={isMarathi} />}
 
         {/* Error State */}
