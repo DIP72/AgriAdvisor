@@ -13,46 +13,16 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [token, setToken] = useState(localStorage.getItem('token'));
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false); // Start with false to prevent hanging
 
-    const API_URL = import.meta.env.VITE_API_URL || '';
+    const API_URL = import.meta.env.REACT_APP_API_URL || 'http://localhost:5000';
 
     // Fetch user profile on mount if token exists
     useEffect(() => {
-        const fetchUser = async () => {
-            if (!token) {
-                setLoading(false);
-                return;
-            }
-
-            try {
-                const response = await fetch(`${API_URL}/api/auth/me`, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
-                });
-
-                if (response.ok) {
-                    const data = await response.json();
-                    setUser(data.user);
-                } else {
-                    // Token is invalid
-                    localStorage.removeItem('token');
-                    setToken(null);
-                    setUser(null);
-                }
-            } catch (error) {
-                console.error('Error fetching user:', error);
-                localStorage.removeItem('token');
-                setToken(null);
-                setUser(null);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchUser();
-    }, [token, API_URL]);
+        // Immediately set loading to false for demo mode
+        setLoading(false);
+        setUser(null);
+    }, []);
 
     const login = async (googleResponse) => {
         try {

@@ -6,6 +6,7 @@ const cookieParser = require('cookie-parser');
 
 const http = require('http');
 const { Server } = require('socket.io');
+const RiskAlertService = require('./services/riskAlertService');
 
 const app = express();
 const server = http.createServer(app);
@@ -15,6 +16,9 @@ const io = new Server(server, {
         methods: ["GET", "POST"]
     }
 });
+
+// Initialize Risk Alert Service
+const riskAlertService = new RiskAlertService(io);
 
 const PORT = process.env.PORT || 5000;
 
@@ -51,6 +55,8 @@ const trendRoutes = require('./routes/trends');
 const syncRoutes = require('./routes/sync');
 const ttsRoutes = require('./routes/tts');
 const feedbackRoutes = require('./routes/feedback');
+const weatherRiskRoutes = require('./routes/weatherRisk');
+const cropOptimizationRoutes = require('./routes/cropOptimization');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/posts', postRoutes);
@@ -59,6 +65,8 @@ app.use('/api/trends', trendRoutes);
 app.use('/api/sync', syncRoutes);
 app.use('/api/tts', ttsRoutes);
 app.use('/api/feedback', feedbackRoutes);
+app.use('/api/weather-risk', weatherRiskRoutes);
+app.use('/api/crop-optimization', cropOptimizationRoutes);
 
 // Detailed recommendation route
 const { generateRecommendations } = require('./services/scoringEngine');
