@@ -1,11 +1,12 @@
 import React from 'react';
-import { Home, Sprout, Users, User, Settings, LogOut, Moon, Sun, Mic, MessageSquare } from 'lucide-react';
+import { Home, Sprout, Users, User, Settings, LogOut, Moon, Sun, Mic, MessageSquare, Loader2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import '../styles/DesktopSidebar.css';
 
 const DesktopSidebar = ({ activeTab, setTab, setScreen, isDarkMode, toggleTheme, onLogout, isEnglish }) => {
     const menuItems = [
         { id: 'home', icon: Home, labelMar: 'होम', labelEng: 'Home', screen: 'home' },
+        { id: 'scanner', icon: Loader2, labelMar: 'स्कॅन क्रॉप', labelEng: 'Scan Crop', screen: 'scanner' },
         { id: 'crops', icon: Sprout, labelMar: 'पीके', labelEng: 'Crops', screen: 'recommendations' },
         { id: 'community', icon: Users, labelMar: 'समुदाय', labelEng: 'Community', screen: 'community' },
         { id: 'profile', icon: User, labelMar: 'प्रोफाईल', labelEng: 'Profile', screen: 'profile' },

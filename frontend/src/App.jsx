@@ -44,6 +44,11 @@ const BottomNav = ({ activeTab, setTab, setScreen, isEnglish }) => {
           <Sprout size={22} />
           <span className="marathi">{isEnglish ? 'Crops' : 'पीके'}</span>
         </div>
+        <div className={`nav-item ${activeTab === 'scanner' ? 'active' : ''}`}
+          onClick={() => { setTab('scanner'); setScreen('scanner'); }}>
+          <Loader2 size={22} className={activeTab === 'scanner' ? 'text-green-600' : ''} />
+          <span className="marathi">{isEnglish ? 'Scan' : 'स्कॅन'}</span>
+        </div>
         <div className={`nav-item ${activeTab === 'community' ? 'active' : ''}`}
           onClick={() => { setTab('community'); setScreen('community'); }}>
           <Users size={22} />
@@ -344,7 +349,7 @@ function App() {
                   display: 'flex',
                   flexDirection: 'column',
                   alignItems: 'center',
-                  paddingTop: isDesktop ? '100px' : '84px'
+                  paddingTop: screen === 'scanner' ? '0' : (isDesktop ? '100px' : '84px')
                 }}
               >
                 <MainHeader
@@ -357,6 +362,19 @@ function App() {
                   isDarkMode={isDarkMode}
                   previousCropScreen={previousCropScreen}
                 />
+                {screen !== 'scanner' && (
+                  <MainHeader
+                    screen={screen}
+                    setScreen={setScreen}
+                    setTab={setActiveTab}
+                    isEnglish={isEnglish}
+                    setIsEnglish={setIsEnglish}
+                    setIsMenuOpen={setIsMenuOpen}
+                    isDesktop={isDesktop}
+                    isDarkMode={isDarkMode}
+                    previousCropScreen={previousCropScreen}
+                  />
+                )}
 
                 {!isDesktop && (
                   <SideMenu
@@ -407,7 +425,7 @@ function App() {
                     />
                   )}
                   {screen === 'community' && <CommunityScreen isDarkMode={isDarkMode} />}
-                  {screen === 'scanner' && <CropScanner />}
+                  {screen === 'scanner' && <CropScanner setScreen={setScreen} />}
                   {screen === 'profile' && (
                     <ProfileScreen
                       darkMode={isDarkMode}

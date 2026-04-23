@@ -7,12 +7,14 @@ import {
     X,
     ChevronRight,
     User,
-    MessageSquare
+    MessageSquare,
+    Loader2
 } from 'lucide-react';
 import { motion as Motion, AnimatePresence } from 'framer-motion';
 
 const SideMenu = ({ isOpen, onClose, darkMode, setScreen, setTab, isEnglish }) => {
     const menuItems = [
+        { icon: Loader2, title: isEnglish ? 'Scan Crop' : 'स्कॅन क्रॉप', color: '#4CAF50', id: 'scanner' },
         { icon: Shield, title: isEnglish ? 'Insurance Info' : 'विमा माहिती', color: '#2196F3' },
         { icon: CircleHelp, title: isEnglish ? 'Help & Support' : 'मदत आणि सहाय्य', color: '#9C27B0' },
         { icon: Phone, title: isEnglish ? 'Contact Us' : 'संपर्क साधा', color: '#4CAF50' },
@@ -97,6 +99,10 @@ const SideMenu = ({ isOpen, onClose, darkMode, setScreen, setTab, isEnglish }) =
                                             if (item.id === 'profile' && setScreen && setTab) {
                                                 setScreen('profile');
                                                 setTab('profile');
+                                                onClose();
+                                            } else if (item.id === 'scanner' && setScreen && setTab) {
+                                                setScreen('scanner');
+                                                setTab('scanner');
                                                 onClose();
                                             } else if (item.id === 'feedback' && setScreen) {
                                                 setScreen('feedback');
