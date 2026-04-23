@@ -27,6 +27,7 @@ import DesktopSidebar from './components/DesktopSidebar';
 import CropScanner from './components/CropScanner';
 import MainHeader from './components/MainHeader';
 import NotificationTray from './components/NotificationTray';
+import WeatherRiskDemo from './components/WeatherRiskDemo';
 import io from 'socket.io-client';
 
 const BottomNav = ({ activeTab, setTab, setScreen, isEnglish }) => {
@@ -200,7 +201,7 @@ const LoadingScreen = ({ isEnglish, isDarkMode, onFinished }) => {
 };
 
 function App() {
-  const { isEnglish, setIsEnglish } = useLanguage();
+  const { isEnglish, language, setLanguage } = useLanguage();
   const { user, isAuthenticated, loading: authLoading } = useAuth();
 
   const [onboarding, setOnboarding] = useState('landing');
@@ -269,6 +270,7 @@ function App() {
         }
         if (user?.isOnboarded) {
           setOnboarding('finished');
+          setScreen('home');
         } else {
           setOnboarding('farm_info');
         }
@@ -293,11 +295,6 @@ function App() {
         background: isDarkMode ? '#0f172a' : '#f8fafc',
       }}
     >
-      {authLoading ? (
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
-          <Loader2 className="animate-spin" size={48} color="var(--primary)" />
-        </div>
-      ) : (
         <AnimatePresence mode="wait">
           {onboarding === 'landing' && (
             <LandingScreen key="landing" onNext={() => setOnboarding('farm_info')} isDesktop={isDesktop} />
@@ -311,12 +308,11 @@ function App() {
               onNext={(data) => {
                 if (data) setFarmDetails(data);
                 setOnboarding('finished');
-                setScreen('loading');
+                setScreen('home');
               }}
               onBack={() => setOnboarding('landing')}
             />
           )}
-
           {onboarding === 'finished' && (
             <div
               key="app-finished"
@@ -356,6 +352,16 @@ function App() {
                   paddingTop: screen === 'scanner' ? '0' : (isDesktop ? '100px' : '84px')
                 }}
               >
+                <MainHeader
+                  screen={screen}
+                  setScreen={setScreen}
+                  setTab={setActiveTab}
+                  isEnglish={isEnglish}
+                  setIsMenuOpen={setIsMenuOpen}
+                  isDesktop={isDesktop}
+                  isDarkMode={isDarkMode}
+                  previousCropScreen={previousCropScreen}
+                />
                 {screen !== 'scanner' && (
                   <MainHeader
                     screen={screen}
@@ -407,30 +413,8 @@ function App() {
                       }}
                     />
                   )}
-                  {screen === 'loading' && (
-                    <LoadingScreen
-                      isEnglish={isEnglish}
-                      isDarkMode={isDarkMode}
-                      onFinished={() => {
-                        setScreen('recommendations');
-                        setActiveTab('crops');
-                      }}
-                    />
-                  )}
-                  {screen === 'all-crops' && (
-                    <CropRecommendationScreen
-                      isEnglish={isEnglish}
-                      isDarkMode={isDarkMode}
-                      isDesktop={isDesktop}
-                      farmInfo={farmDetails}
-                      showAll={true}
-                      setScreen={setScreen}
-                      onSelectCrop={(crop) => {
-                        setSelectedCrop(crop);
-                        setPreviousCropScreen('all-crops');
-                        setScreen('crop-detail');
-                      }}
-                    />
+                  {screen === 'weather-risk-demo' && (
+                    <WeatherRiskDemo />
                   )}
                   {screen === 'crop-detail' && (
                     <CropDetailScreen
@@ -455,7 +439,6 @@ function App() {
                       setIsDarkMode={setIsDarkMode}
                       toggleTheme={toggleTheme}
                       isEnglish={isEnglish}
-                      setIsEnglish={setIsEnglish}
                       isDesktop={isDesktop}
                       onLogout={() => {
                         localStorage.removeItem('token');
@@ -477,19 +460,8 @@ function App() {
             </div>
           )}
         </AnimatePresence>
-      )}
 
       <VoiceModal isOpen={isVoiceOpen} onClose={() => setIsVoiceOpen(false)} />
-
-      {isAuthenticated && (
-        <NotificationTray
-          notifications={notifications}
-          removeNotification={(id) => setNotifications(prev => prev.filter(n => (n._id || n.timestamp) !== id))}
-          isEnglish={isEnglish}
-          setScreen={setScreen}
-          setTab={setActiveTab}
-        />
-      )}
     </div>
   );
 }

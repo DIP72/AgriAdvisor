@@ -1,0 +1,372 @@
+// Enhanced crop data with 15+ crops for comprehensive weather risk analysis
+export const enhancedCropData = [
+    {
+        id: 'rice',
+        name: 'Rice',
+        scientificName: 'Oryza sativa',
+        marathiName: ' Rice',
+        englishName: 'Rice',
+        icon: 'Rice',
+        category: 'cereals',
+        growingSeason: ['kharif', 'rabi'],
+        waterRequirement: 'high',
+        temperatureRange: { min: 20, max: 35, optimal: [25, 30] },
+        humidityRange: { min: 60, max: 85, optimal: [70, 80] },
+        rainfallRequirement: { min: 100, max: 300, optimal: [150, 200] },
+        riskFactors: ['fungal_diseases', 'pests', 'water_stress'],
+        color: '#22c55e',
+        description: 'Staple food crop requiring high water and moderate temperatures'
+    },
+    {
+        id: 'wheat',
+        name: 'Wheat',
+        scientificName: 'Triticum aestivum',
+        marathiName: ' Wheat',
+        englishName: 'Wheat',
+        icon: 'Wheat',
+        category: 'cereals',
+        growingSeason: ['rabi'],
+        waterRequirement: 'medium',
+        temperatureRange: { min: 15, max: 25, optimal: [18, 22] },
+        humidityRange: { min: 40, max: 70, optimal: [50, 65] },
+        rainfallRequirement: { min: 50, max: 150, optimal: [75, 125] },
+        riskFactors: ['fungal_diseases', 'cold_stress', 'drought'],
+        color: '#f59e0b',
+        description: 'Cool season crop with moderate water requirements'
+    },
+    {
+        id: 'cotton',
+        name: 'Cotton',
+        scientificName: 'Gossypium hirsutum',
+        marathiName: ' Cotton',
+        englishName: 'Cotton',
+        icon: 'Cotton',
+        category: 'fiber',
+        growingSeason: ['kharif'],
+        waterRequirement: 'medium',
+        temperatureRange: { min: 25, max: 35, optimal: [28, 32] },
+        humidityRange: { min: 40, max: 60, optimal: [45, 55] },
+        rainfallRequirement: { min: 30, max: 100, optimal: [50, 80] },
+        riskFactors: ['pests', 'bollworm', 'heat_stress'],
+        color: '#3b82f6',
+        description: 'Fiber crop requiring warm temperatures and moderate humidity'
+    },
+    {
+        id: 'maize',
+        name: 'Maize',
+        scientificName: 'Zea mays',
+        marathiName: 'Maize',
+        englishName: 'Maize',
+        icon: 'Maize',
+        category: 'cereals',
+        growingSeason: ['kharif', 'rabi'],
+        waterRequirement: 'medium',
+        temperatureRange: { min: 20, max: 30, optimal: [22, 28] },
+        humidityRange: { min: 50, max: 70, optimal: [55, 65] },
+        rainfallRequirement: { min: 75, max: 175, optimal: [100, 150] },
+        riskFactors: ['pests', 'drought', 'nutrient_deficiency'],
+        color: '#f97316',
+        description: 'Versatile cereal crop with high yield potential'
+    },
+    {
+        id: 'sugarcane',
+        name: 'Sugarcane',
+        scientificName: 'Saccharum officinarum',
+        marathiName: 'Sugarcane',
+        englishName: 'Sugarcane',
+        icon: 'Sugarcane',
+        category: 'cash',
+        growingSeason: ['perennial'],
+        waterRequirement: 'high',
+        temperatureRange: { min: 20, max: 35, optimal: [25, 30] },
+        humidityRange: { min: 60, max: 80, optimal: [65, 75] },
+        rainfallRequirement: { min: 150, max: 300, optimal: [200, 250] },
+        riskFactors: ['pests', 'diseases', 'water_stress'],
+        color: '#10b981',
+        description: 'High-value cash crop requiring abundant water'
+    },
+    {
+        id: 'pulses',
+        name: 'Pulses',
+        scientificName: 'Various legumes',
+        marathiName: 'Pulses',
+        englishName: 'Pulses',
+        icon: 'Pulses',
+        category: 'legumes',
+        growingSeason: ['kharif', 'rabi'],
+        waterRequirement: 'low',
+        temperatureRange: { min: 18, max: 30, optimal: [22, 28] },
+        humidityRange: { min: 40, max: 70, optimal: [50, 60] },
+        rainfallRequirement: { min: 25, max: 100, optimal: [50, 75] },
+        riskFactors: ['drought', 'pests', 'diseases'],
+        color: '#8b5cf6',
+        description: 'Protein-rich crops with low water requirements'
+    },
+    {
+        id: 'groundnut',
+        name: 'Groundnut',
+        scientificName: 'Arachis hypogaea',
+        marathiName: 'Groundnut',
+        englishName: 'Groundnut',
+        icon: 'Groundnut',
+        category: 'oilseeds',
+        growingSeason: ['kharif'],
+        waterRequirement: 'low',
+        temperatureRange: { min: 22, max: 32, optimal: [25, 30] },
+        humidityRange: { min: 50, max: 70, optimal: [55, 65] },
+        rainfallRequirement: { min: 30, max: 100, optimal: [50, 80] },
+        riskFactors: ['drought', 'diseases', 'heat_stress'],
+        color: '#eab308',
+        description: 'Oilseed crop with drought tolerance'
+    },
+    {
+        id: 'soybean',
+        name: 'Soybean',
+        scientificName: 'Glycine max',
+        marathiName: 'Soybean',
+        englishName: 'Soybean',
+        icon: 'Soybean',
+        category: 'oilseeds',
+        growingSeason: ['kharif'],
+        waterRequirement: 'medium',
+        temperatureRange: { min: 20, max: 30, optimal: [23, 28] },
+        humidityRange: { min: 50, max: 70, optimal: [55, 65] },
+        rainfallRequirement: { min: 50, max: 150, optimal: [75, 125] },
+        riskFactors: ['pests', 'diseases', 'water_stress'],
+        color: '#06b6d4',
+        description: 'Protein-rich oilseed with high nutritional value'
+    },
+    {
+        id: 'turmeric',
+        name: 'Turmeric',
+        scientificName: 'Curcuma longa',
+        marathiName: 'Turmeric',
+        englishName: 'Turmeric',
+        icon: 'Turmeric',
+        category: 'spices',
+        growingSeason: ['kharif'],
+        waterRequirement: 'high',
+        temperatureRange: { min: 20, max: 30, optimal: [23, 27] },
+        humidityRange: { min: 60, max: 85, optimal: [70, 80] },
+        rainfallRequirement: { min: 100, max: 250, optimal: [150, 200] },
+        riskFactors: ['diseases', 'water_stress', 'pests'],
+        color: '#dc2626',
+        description: 'Medicinal spice requiring humid conditions'
+    },
+    {
+        id: 'chilli',
+        name: 'Chilli',
+        scientificName: 'Capsicum annuum',
+        marathiName: 'Chilli',
+        englishName: 'Chilli',
+        icon: 'Chilli',
+        category: 'vegetables',
+        growingSeason: ['kharif', 'rabi'],
+        waterRequirement: 'medium',
+        temperatureRange: { min: 20, max: 35, optimal: [25, 30] },
+        humidityRange: { min: 50, max: 75, optimal: [60, 70] },
+        rainfallRequirement: { min: 50, max: 150, optimal: [75, 125] },
+        riskFactors: ['pests', 'diseases', 'heat_stress'],
+        color: '#ef4444',
+        description: 'Spice vegetable with high market demand'
+    },
+    {
+        id: 'tomato',
+        name: 'Tomato',
+        scientificName: 'Solanum lycopersicum',
+        marathiName: 'Tomato',
+        englishName: 'Tomato',
+        icon: 'Tomato',
+        category: 'vegetables',
+        growingSeason: ['kharif', 'rabi', 'summer'],
+        waterRequirement: 'medium',
+        temperatureRange: { min: 18, max: 32, optimal: [22, 28] },
+        humidityRange: { min: 60, max: 80, optimal: [65, 75] },
+        rainfallRequirement: { min: 50, max: 150, optimal: [75, 125] },
+        riskFactors: ['diseases', 'pests', 'heat_stress'],
+        color: '#f97316',
+        description: 'Popular vegetable with year-round cultivation'
+    },
+    {
+        id: 'onion',
+        name: 'Onion',
+        scientificName: 'Allium cepa',
+        marathiName: 'Onion',
+        englishName: 'Onion',
+        icon: 'Onion',
+        category: 'vegetables',
+        growingSeason: ['kharif', 'rabi'],
+        waterRequirement: 'medium',
+        temperatureRange: { min: 15, max: 25, optimal: [18, 22] },
+        humidityRange: { min: 40, max: 70, optimal: [50, 60] },
+        rainfallRequirement: { min: 25, max: 100, optimal: [50, 75] },
+        riskFactors: ['diseases', 'water_stress', 'cold_stress'],
+        color: '#a855f7',
+        description: 'Essential vegetable with good storage life'
+    },
+    {
+        id: 'potato',
+        name: 'Potato',
+        scientificName: 'Solanum tuberosum',
+        marathiName: 'Potato',
+        englishName: 'Potato',
+        icon: 'Potato',
+        category: 'vegetables',
+        growingSeason: ['rabi'],
+        waterRequirement: 'medium',
+        temperatureRange: { min: 15, max: 25, optimal: [18, 22] },
+        humidityRange: { min: 50, max: 70, optimal: [55, 65] },
+        rainfallRequirement: { min: 50, max: 150, optimal: [75, 125] },
+        riskFactors: ['diseases', 'cold_stress', 'pests'],
+        color: '#84cc16',
+        description: 'Staple tuber crop with high nutritional value'
+    },
+    {
+        id: 'banana',
+        name: 'Banana',
+        scientificName: 'Musa paradisiaca',
+        marathiName: 'Banana',
+        englishName: 'Banana',
+        icon: 'Banana',
+        category: 'fruits',
+        growingSeason: ['perennial'],
+        waterRequirement: 'high',
+        temperatureRange: { min: 20, max: 35, optimal: [25, 30] },
+        humidityRange: { min: 70, max: 90, optimal: [75, 85] },
+        rainfallRequirement: { min: 150, max: 300, optimal: [200, 250] },
+        riskFactors: ['diseases', 'wind_damage', 'cold_stress'],
+        color: '#fbbf24',
+        description: 'Tropical fruit requiring high humidity and temperature'
+    },
+    {
+        id: 'mango',
+        name: 'Mango',
+        scientificName: 'Mangifera indica',
+        marathiName: 'Mango',
+        englishName: 'Mango',
+        icon: 'Mango',
+        category: 'fruits',
+        growingSeason: ['summer'],
+        waterRequirement: 'medium',
+        temperatureRange: { min: 22, max: 35, optimal: [27, 32] },
+        humidityRange: { min: 40, max: 70, optimal: [50, 60] },
+        rainfallRequirement: { min: 25, max: 100, optimal: [50, 75] },
+        riskFactors: ['pests', 'diseases', 'flower_drop'],
+        color: '#f59e0b',
+        description: 'King of fruits requiring dry conditions during flowering'
+    },
+    {
+        id: 'grapes',
+        name: 'Grapes',
+        scientificName: 'Vitis vinifera',
+        marathiName: 'Grapes',
+        englishName: 'Grapes',
+        icon: 'Grapes',
+        category: 'fruits',
+        growingSeason: ['perennial'],
+        waterRequirement: 'medium',
+        temperatureRange: { min: 20, max: 35, optimal: [25, 30] },
+        humidityRange: { min: 40, max: 65, optimal: [45, 55] },
+        rainfallRequirement: { min: 30, max: 100, optimal: [50, 75] },
+        riskFactors: ['diseases', 'pests', 'humidity_stress'],
+        color: '#8b5cf6',
+        description: 'High-value fruit requiring moderate humidity'
+    },
+    {
+        id: 'orange',
+        name: 'Orange',
+        scientificName: 'Citrus sinensis',
+        marathiName: 'Orange',
+        englishName: 'Orange',
+        icon: 'Orange',
+        category: 'fruits',
+        growingSeason: ['perennial'],
+        waterRequirement: 'medium',
+        temperatureRange: { min: 18, max: 30, optimal: [22, 28] },
+        humidityRange: { min: 50, max: 70, optimal: [55, 65] },
+        rainfallRequirement: { min: 50, max: 150, optimal: [75, 125] },
+        riskFactors: ['pests', 'diseases', 'cold_stress'],
+        color: '#fb923c',
+        description: 'Citrus fruit with year-round market demand'
+    },
+    {
+        id: 'coconut',
+        name: 'Coconut',
+        scientificName: 'Cocos nucifera',
+        marathiName: 'Coconut',
+        englishName: 'Coconut',
+        icon: 'Coconut',
+        category: 'tree_crops',
+        growingSeason: ['perennial'],
+        waterRequirement: 'high',
+        temperatureRange: { min: 22, max: 35, optimal: [27, 32] },
+        humidityRange: { min: 70, max: 90, optimal: [75, 85] },
+        rainfallRequirement: { min: 150, max: 300, optimal: [200, 250] },
+        riskFactors: ['pests', 'drought', 'wind_damage'],
+        color: '#84cc16',
+        description: 'Multipurpose tree crop for coastal regions'
+    },
+    {
+        id: 'jowar',
+        name: 'Jowar',
+        scientificName: 'Sorghum bicolor',
+        marathiName: 'Jowar',
+        englishName: 'Jowar',
+        icon: 'Jowar',
+        category: 'cereals',
+        growingSeason: ['kharif', 'rabi'],
+        waterRequirement: 'low',
+        temperatureRange: { min: 20, max: 35, optimal: [25, 30] },
+        humidityRange: { min: 30, max: 60, optimal: [40, 50] },
+        rainfallRequirement: { min: 25, max: 100, optimal: [50, 75] },
+        riskFactors: ['drought', 'pests', 'birds'],
+        color: '#f97316',
+        description: 'Drought-tolerant cereal crop'
+    },
+    {
+        id: 'bajra',
+        name: 'Bajra',
+        scientificName: 'Pennisetum glaucum',
+        marathiName: 'Bajra',
+        englishName: 'Bajra',
+        icon: 'Bajra',
+        category: 'cereals',
+        growingSeason: ['kharif'],
+        waterRequirement: 'low',
+        temperatureRange: { min: 25, max: 40, optimal: [30, 35] },
+        humidityRange: { min: 30, max: 60, optimal: [40, 50] },
+        rainfallRequirement: { min: 20, max: 80, optimal: [40, 60] },
+        riskFactors: ['drought', 'heat_stress', 'pests'],
+        color: '#eab308',
+        description: 'Heat and drought tolerant millet'
+    }
+];
+
+export const getCropById = (id) => {
+    return enhancedCropData.find(crop => crop.id === id) || enhancedCropData[0];
+};
+
+export const getCropsByCategory = (category) => {
+    return enhancedCropData.filter(crop => crop.category === category);
+};
+
+export const getCropsBySeason = (season) => {
+    return enhancedCropData.filter(crop => 
+        crop.growingSeason.includes(season) || crop.growingSeason.includes('perennial')
+    );
+};
+
+export const getAllCropCategories = () => {
+    const categories = [...new Set(enhancedCropData.map(crop => crop.category))];
+    return categories;
+};
+
+export const searchCrops = (query) => {
+    const searchTerm = query.toLowerCase();
+    return enhancedCropData.filter(crop => 
+        crop.name.toLowerCase().includes(searchTerm) ||
+        crop.englishName.toLowerCase().includes(searchTerm) ||
+        crop.marathiName.toLowerCase().includes(searchTerm) ||
+        crop.scientificName.toLowerCase().includes(searchTerm)
+    );
+};
