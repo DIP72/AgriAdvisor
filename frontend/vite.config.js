@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
+import tailwindcss from '@tailwindcss/vite'
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -24,6 +25,7 @@ export default defineConfig({
     },
   },
   plugins: [
+    tailwindcss(),
     react(),
     VitePWA({
       registerType: 'autoUpdate',
@@ -136,7 +138,7 @@ export default defineConfig({
         clientsClaim: true,
       },
       devOptions: {
-        enabled: true, // Enable PWA in development mode for testing
+        enabled: false, // Disable PWA in development to fix path-related syntax errors (single quote in path)
         type: 'module',
       },
     }),
