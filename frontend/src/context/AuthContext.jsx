@@ -15,7 +15,7 @@ export const AuthProvider = ({ children }) => {
     const [token, setToken] = useState(localStorage.getItem('token'));
     const [loading, setLoading] = useState(false); // Start with false to prevent hanging
 
-    const API_URL = import.meta.env.REACT_APP_API_URL || 'http://localhost:5000';
+    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
     // Fetch user profile on mount if token exists
     useEffect(() => {

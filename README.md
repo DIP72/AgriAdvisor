@@ -49,7 +49,7 @@ git clone [https://github.com/your-username/crop-advisor.git](https://github.com
 npm install
 
 # Set up environment variables
-echo "REACT_APP_WEATHER_API_KEY=your_key_here" > .env
+echo "VITE_WEATHER_API_KEY=your_key_here" > .env
 
 # Launch the dashboard
 npm start
