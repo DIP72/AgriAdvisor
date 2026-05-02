@@ -1,3 +1,4 @@
+@import "tailwindcss";
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap');
 
 :root {
@@ -47,6 +48,7 @@ body {
 .marathi {
   font-family: 'Noto Sans Devanagari', sans-serif;
   font-weight: 600;
+  
 }
 
 .english-sub {
@@ -256,7 +258,7 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 16px 20px;
+  padding: 0px 0px;  
   background: var(--bg-cream);
   position: sticky;
   top: 0;
@@ -344,6 +346,7 @@ body {
   margin: 16px 20px 16px;
   font-size: 0.75rem;
   font-weight: 600;
+  color: var(--primary);
   border: 1px solid #eee;
 }
 
@@ -885,4 +888,12 @@ body {
     max-width: none !important;
     width: 100% !important;
   }
+}
+
+
+
+
+.insight-card-text{
+  color: black;
+  font-weight: bold;
 }

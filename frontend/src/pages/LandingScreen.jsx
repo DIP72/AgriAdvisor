@@ -9,7 +9,7 @@ import '../styles/LandingScreen.css';
 
 const LandingScreen = ({ onNext, isDesktop }) => {
     const [view, setView] = useState('landing'); // 'landing', 'login', or 'signup'
-    const [isEnglish, setIsEnglish] = useState(false);
+    const [isEnglish, setIsEnglish] = useState(true);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [name, setName] = useState('');

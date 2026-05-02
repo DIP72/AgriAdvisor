@@ -1,10 +1,13 @@
 import React from 'react';
+import { useLanguage } from '../context/LanguageContext';
 
-const LanguageToggle = ({ isEnglish, setIsEnglish, isDarkMode }) => {
+const LanguageToggle = ({ isEnglish, isDarkMode }) => {
+    const { toggleLanguage } = useLanguage();
+    
     return (
         <div
             className="lang-toggle-nav"
-            onClick={() => setIsEnglish(!isEnglish)}
+            onClick={toggleLanguage}
             style={{
                 cursor: 'pointer',
                 background: isDarkMode ? 'rgba(255, 255, 255, 0.05)' : 'rgba(46, 125, 50, 0.1)',

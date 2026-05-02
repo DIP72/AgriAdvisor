@@ -9,11 +9,21 @@ import {
     Languages
 } from 'lucide-react';
 import { motion as Motion } from 'framer-motion';
+import { useLanguage } from '../context/LanguageContext';
 import '../styles/SettingsScreen.css';
 
-const SettingsScreen = ({ darkMode, isDarkMode, setIsDarkMode, toggleTheme, isEnglish, setIsEnglish, onLogout, isDesktop }) => {
+const SettingsScreen = ({ darkMode, isDarkMode, setIsDarkMode, toggleTheme, isEnglish, onLogout, isDesktop }) => {
+    const { toggleLanguage } = useLanguage();
     const lang = isEnglish ? 'en' : 'mr';
     const settings = [
+        {
+            id: 'language',
+            icon: Languages,
+            label_mr: 'English / Marathi',
+            label_en: 'English / Marathi',
+            color: '#4CAF50',
+            onClick: toggleLanguage
+        },
         {
             id: 'notifications',
             icon: Bell,
@@ -31,6 +41,7 @@ const SettingsScreen = ({ darkMode, isDarkMode, setIsDarkMode, toggleTheme, isEn
             color: isDarkMode ? '#FFD54F' : '#607D8B'
         }
     ];
+
 
     return (
         <Motion.div

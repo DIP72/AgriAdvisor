@@ -46,7 +46,7 @@ const FarmInfoScreen = ({ onNext, onBack, farmInfo, setFarmInfo, isDesktop }) =>
     const setPlantingSeason = (val) => updateFarmInfo({ season: val });
 
     const [isSpeaking, setIsSpeaking] = useState(false);
-    const [isEnglish, setIsEnglish] = useState(false);
+    const [isEnglish, setIsEnglish] = useState(true);
 
 
     const handleSpeak = () => {

@@ -11,31 +11,46 @@ export const useLanguage = () => {
 };
 
 export const LanguageProvider = ({ children }) => {
-    // Get saved language from localStorage or default to Marathi (false = Marathi, true = English)
-    const [isEnglish, setIsEnglish] = useState(() => {
+    // Get saved language from localStorage or default to English
+    const [language, setLanguage] = useState(() => {
         const saved = localStorage.getItem('language');
-        return saved === 'english';
+        return saved || 'english';
     });
 
     // Save language preference whenever it changes
     useEffect(() => {
-        localStorage.setItem('language', isEnglish ? 'english' : 'marathi');
-    }, [isEnglish]);
+        localStorage.setItem('language', language);
+    }, [language]);
 
     const toggleLanguage = () => {
-        setIsEnglish(prev => !prev);
+        const languages = ['english', 'marathi', 'hindi', 'bengali'];
+        const currentIndex = languages.indexOf(language);
+        const nextIndex = (currentIndex + 1) % languages.length;
+        setLanguage(languages[nextIndex]);
     };
 
-    const t = (englishText, marathiText) => {
-        return isEnglish ? englishText : marathiText;
+    const t = (englishText, marathiText, hindiText, bengaliText) => {
+        switch (language) {
+            case 'marathi':
+                return marathiText;
+            case 'hindi':
+                return hindiText;
+            case 'bengali':
+                return bengaliText;
+            default:
+                return englishText;
+        }
     };
 
     const value = {
-        isEnglish,
-        setIsEnglish,
+        language,
+        setLanguage,
         toggleLanguage,
-        t, // translation helper function
-        language: isEnglish ? 'english' : 'marathi'
+        t,
+        isEnglish: language === 'english',
+        isMarathi: language === 'marathi',
+        isHindi: language === 'hindi',
+        isBengali: language === 'bengali'
     };
 
     return (
