@@ -113,7 +113,7 @@ const HomeScreen = ({ setScreen, setTab, isDarkMode, isEnglish, setSelectedCrop,
 
             try {
                 // Prioritize the user provided key for genuine real-time data
-                const ACTIVE_KEY = "d7d71b6cbcb8eec1002e93051825b17b";
+                const ACTIVE_KEY = import.meta.env.VITE_WEATHER_API_KEY;
 
                 const response = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${ACTIVE_KEY}&units=metric`);
 
