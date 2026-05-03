@@ -1,0 +1,11 @@
+{
+  "name": "agriadvisor-root",
+  "private": true,
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
+  "overrides": {
+    "vite": "^7.3.2"
+  }
+}
